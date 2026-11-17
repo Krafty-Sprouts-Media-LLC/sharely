@@ -1,0 +1,16 @@
+/* Sharely: the highlight-to-share toolbar and the quote button. */
+.sharely-vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.sharely-bar{display:flex;flex-wrap:wrap;gap:var(--teme-space-1,.25rem);padding:var(--teme-space-1,.25rem);background:var(--teme-base,#fff);color:var(--teme-contrast,#111);border:1px solid var(--teme-rule,#ddd);border-radius:.5rem;box-shadow:0 .25rem 1rem rgb(0 0 0 / .15);z-index:1000;width:max-content;max-width:calc(100vw - 1rem)}
+.sharely-bar--float{position:absolute}
+.sharely-bar--inline{position:static;margin-block:var(--teme-space-2,.5rem)}
+.sharely-bar-item{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;min-height:2.25rem;padding:var(--teme-space-1,.25rem);border:0;border-radius:.375rem;background:transparent;color:inherit;font:inherit;font-size:var(--teme-step--1,.875rem);text-decoration:none;cursor:pointer}
+.sharely-bar-item:hover{background:color-mix(in srgb,currentColor 10%,transparent)}
+.sharely-bar-item:focus-visible,.sharely-quote-button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.sharely-bar .sharely-icon{width:1.25rem;height:1.25rem;fill:currentColor}
+.sharely-bar-item.is-done{color:var(--teme-accent,#2563eb)}
+.sharely-quote{margin-block:var(--teme-space-1,.25rem) var(--teme-space-3,1rem)}
+.sharely-quote-button{display:inline-flex;align-items:center;gap:var(--teme-space-1,.25rem);min-height:2.25rem;padding:var(--teme-space-1,.25rem) var(--teme-space-2,.5rem);border:1px solid var(--teme-rule,#ddd);border-radius:999px;background:var(--teme-base,#fff);color:var(--teme-contrast,#111);font:inherit;font-size:var(--teme-step--1,.875rem);cursor:pointer}
+.sharely-quote-button .sharely-icon{width:1rem;height:1rem;fill:currentColor}
+.sharely-quote-button[aria-expanded="true"]{border-color:var(--teme-accent,#2563eb)}
+@media (hover:none){.sharely-bar-item{min-width:44px;min-height:44px}.sharely-quote-button{min-height:44px}}
+@media (prefers-reduced-motion:no-preference){.sharely-bar-item,.sharely-quote-button{transition:background-color .15s,border-color .15s}}
