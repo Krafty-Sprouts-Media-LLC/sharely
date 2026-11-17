@@ -31,6 +31,9 @@ use Teme\Contracts\Settings\PluginSettingsWriter;
  */
 final readonly class ApplyImport implements JobHandler
 {
+    /** Where what is left to set by hand is kept, in sharely_state. @since 1.0.0 */
+    public const string TODO = 'novashare-todo';
+
     /** @since 1.0.0 */
     public function __construct(private PluginSettingsWriter $writer) {}
 
@@ -76,6 +79,9 @@ final readonly class ApplyImport implements JobHandler
             $message .= ' '.__('Set by hand: :list.', ['list' => implode('; ', $todo)]);
         }
 
+        // A finished run's message reads "Finished." in Tools › Jobs, so what is left
+        // to do is also kept, for the share report's overview to show.
+        $state->put(self::TODO, $todo === [] ? __('Nothing: every Novashare setting Sharely has was saved.') : implode('; ', $todo));
         $context->progress(1, 1, mb_substr($message, 0, 1000));
     }
 }

@@ -126,14 +126,14 @@
             "menu": "site",
             "pages": [
                 { "id": "overview", "label": "Overview", "blocks": [
-                    { "type": "figures", "items": [
+                    { "type": "figures", "id": "totals", "items": [
                         { "id": "clicks-30", "label": "Share clicks, last 30 days", "format": "number" },
                         { "id": "clicks-all", "label": "Share clicks, all time", "format": "number" },
                         { "id": "network-counts", "label": "Shares the networks report", "format": "number" },
                         { "id": "top-network", "label": "Most used network, last 30 days", "format": "text" }
                     ] },
                     { "type": "chart", "id": "per-day", "label": "Share clicks a day", "kind": "bar", "series": [ { "id": "clicks", "label": "Share clicks" } ] },
-                    { "type": "table", "record": "items", "columns": [
+                    { "type": "table", "id": "top-items", "record": "items", "columns": [
                         { "id": "title", "label": "Article", "kind": "text" },
                         { "id": "clicks", "label": "Share clicks", "kind": "number", "sortable": true },
                         { "id": "counts", "label": "Network counts", "kind": "number", "sortable": true },
@@ -141,12 +141,18 @@
                     ], "search": true, "perPage": 25 }
                 ] },
                 { "id": "networks", "label": "Networks", "blocks": [
-                    { "type": "table", "record": "networks", "columns": [
+                    { "type": "table", "id": "top-networks", "record": "networks", "columns": [
                         { "id": "network", "label": "Network", "kind": "text" },
                         { "id": "clicks-30", "label": "Last 30 days", "kind": "number", "sortable": true },
                         { "id": "clicks", "label": "All time", "kind": "number", "sortable": true },
                         { "id": "counts", "label": "Reported by the network", "kind": "number", "sortable": true }
                     ], "perPage": 25 }
+                ] },
+                { "id": "import", "label": "Novashare import", "blocks": [
+                    { "type": "figures", "id": "import", "items": [
+                        { "id": "import-todo", "label": "Left to set by hand after the Novashare import", "format": "text" }
+                    ] },
+                    { "type": "actions", "id": "apply", "actions": ["import"] }
                 ] }
             ],
             "records": [

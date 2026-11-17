@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace KraftySprouts\Sharely\Admin;
 
 use DateTimeImmutable;
+use KraftySprouts\Sharely\Jobs\ApplyImport;
 use KraftySprouts\Sharely\Networks\Networks;
 use KraftySprouts\Sharely\Store\Db;
+use KraftySprouts\Sharely\Store\State;
 use Teme\Contracts\Admin\AreaContext;
 use Teme\Contracts\Admin\Chart;
 use Teme\Contracts\Admin\Figure;
@@ -40,6 +42,10 @@ final class Report implements PluginArea
     /** @since 1.0.0 */
     public function figures(string $page, string $block, AreaContext $context): array
     {
+        if ($block === 'import') {
+            return ['import-todo' => Figure::text(mb_substr((string) ((new State)->get(ApplyImport::TODO) ?? __('No Novashare import applied.')), 0, 200))];
+        }
+
         $since = (new DateTimeImmutable('-29 days'))->format('Y-m-d');
         $before = (new DateTimeImmutable('-59 days'))->format('Y-m-d');
         $recent = (int) Db::table('sharely_clicks')->where('day', '>=', $since)->sum('clicks');
