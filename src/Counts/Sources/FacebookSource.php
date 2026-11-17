@@ -58,11 +58,11 @@ final class FacebookSource implements CountSource
             return null;
         }
 
+        // The token goes in a header, never the address, so no log of the request holds it.
         $data = Fetch::object($this->http, self::ENDPOINT.'?'.Fetch::query([
             'id' => $url,
             'fields' => 'engagement',
-            'access_token' => $token,
-        ]));
+        ]), ['Authorization' => 'Bearer '.$token]);
         $engagement = $data['engagement'] ?? null;
 
         if (! is_array($engagement)) {

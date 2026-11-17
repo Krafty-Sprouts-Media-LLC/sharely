@@ -35,7 +35,9 @@ it('asks Facebook for engagement with the address and token encoded', function (
         ->and($source->host())->toBe('graph.facebook.com')
         ->and($http->requests)->toHaveCount(1)
         ->and($http->requests[0]['method'])->toBe('GET')
-        ->and($http->requests[0]['url'])->toBe('https://graph.facebook.com/v21.0/?id='.COUNT_URL_ENCODED.'&fields=engagement&access_token=test-app%7Ctest-secret');
+        ->and($http->requests[0]['url'])->toBe('https://graph.facebook.com/v21.0/?id='.COUNT_URL_ENCODED.'&fields=engagement')
+        ->and($http->requests[0]['url'])->not->toContain('test-secret')
+        ->and($http->requests[0]['headers'])->toMatchArray(['Authorization' => 'Bearer test-app|test-secret']);
 });
 
 it('sends nothing to Facebook without a token', function (string $token): void {
