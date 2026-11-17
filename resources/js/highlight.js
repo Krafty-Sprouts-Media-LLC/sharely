@@ -25,10 +25,12 @@
     const icons = document.querySelector('template[data-sharely-icons]');
     if (!root || !networks.length) return;
 
+    // Everything the script adds stays inside a landmark: the page's main, else the article.
+    const landmark = root.closest('main, [role="main"]') || root;
     const status = document.createElement('span');
     status.className = 'sharely-vh';
     status.setAttribute('role', 'status');
-    document.body.append(status);
+    landmark.append(status);
     const announce = (text) => {
       status.textContent = '';
       if (text) setTimeout(() => { status.textContent = text; }, 50);
@@ -123,8 +125,17 @@
       left = Math.max(gap, Math.min(left, vw - w - gap));
       let top = rect.top - h - gap;
       if (top < gap) top = rect.bottom + gap;
-      bar.style.left = Math.round(left + window.scrollX) + 'px';
-      bar.style.top = Math.round(top + window.scrollY) + 'px';
+      // The bar sits inside the page's landmark, so measure from the box it is placed in.
+      let ox = window.scrollX;
+      let oy = window.scrollY;
+      const box = bar.offsetParent;
+      if (box && box !== document.body && box !== document.documentElement) {
+        const r = box.getBoundingClientRect();
+        ox = box.scrollLeft - r.left;
+        oy = box.scrollTop - r.top;
+      }
+      bar.style.left = Math.round(left + ox) + 'px';
+      bar.style.top = Math.round(top + oy) + 'px';
     };
 
     const fromSelection = () => {
@@ -155,7 +166,7 @@
         announce(words.highlightReady || '');
       } else {
         bar.classList.add('sharely-bar--float');
-        document.body.append(bar);
+        landmark.append(bar);
         place(range.getBoundingClientRect());
       }
     };
