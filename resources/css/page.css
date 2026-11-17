@@ -1,0 +1,14 @@
+/* Sharely's own small pages, such as the Mastodon server picker. Plain and readable in light and dark. */
+:root{color-scheme:light dark;--bg:#fff;--fg:#111827;--muted:#4b5563;--rule:#d1d5db;--accent:#4338ca;--on-accent:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#111827;--fg:#f3f4f6;--muted:#d1d5db;--rule:#4b5563;--accent:#a5b4fc;--on-accent:#111827}}
+body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.sharely-page{max-width:36rem;margin:0 auto;padding:2rem 1rem}
+h1{font-size:1.5rem;line-height:1.25;margin:0 0 1rem}
+.sharely-page__quote{margin:1rem 0;padding:.75rem 1rem;border-inline-start:4px solid var(--rule);color:var(--muted);overflow-wrap:anywhere}
+label{display:block;font-weight:600;margin-bottom:.25rem}
+input{box-sizing:border-box;width:100%;min-height:2.75rem;padding:.5rem .75rem;border:1px solid var(--muted);border-radius:.375rem;background:var(--bg);color:var(--fg);font:inherit}
+button{margin-top:.75rem;min-height:2.75rem;padding:.5rem 1.25rem;border:0;border-radius:.375rem;background:var(--accent);color:var(--on-accent);font:inherit;font-weight:600;cursor:pointer}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.sharely-page__error{color:#b91c1c;margin:.25rem 0}
+@media (prefers-color-scheme:dark){.sharely-page__error{color:#fca5a5}}

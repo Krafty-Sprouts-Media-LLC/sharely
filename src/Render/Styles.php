@@ -85,6 +85,7 @@ final class Styles
 .sharely__btn:focus-visible,.sharely__more>summary:focus-visible{outline:3px solid var(--teme-accent,#2563eb);outline-offset:2px}
 .sharely__btn[hidden]{display:none}
 .sharely-icon{width:1.25em;height:1.25em;flex:none;fill:currentColor}
+.sharely__btn.is-done .sharely-icon:not(.sharely-icon--done){display:none}.sharely__btn.is-done .sharely-icon--done{display:block}
 .sharely__count{font-weight:700;padding-inline-start:.25em;border-inline-start:1px solid currentColor}
 .sharely--accent .sharely__btn{--sharely-bg:var(--teme-accent,#2563eb);--sharely-fg:var(--teme-on-accent,#fff)}
 .sharely--plain .sharely__btn{--sharely-bg:transparent;--sharely-fg:var(--teme-contrast,#111);border-color:var(--teme-rule,currentColor)}

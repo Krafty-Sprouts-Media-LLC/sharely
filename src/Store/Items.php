@@ -1,8 +1,9 @@
 <?php
 
 /**
- * The published items Sharely shares, with every address each has had and
- * the options set for each in the editor.
+ * The published items Sharely shares, kept in sharely_items as hooks and
+ * the sync job tell of them, with every address each has had in
+ * sharely_addresses, so counts follow an item to a new address.
  *
  * @package KraftySprouts\Sharely
  * @since 1.0.0

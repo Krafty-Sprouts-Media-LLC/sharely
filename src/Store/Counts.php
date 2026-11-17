@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Share clicks counted on the site, and the counts networks report.
+ * Share clicks counted on the site, one number per item, network and day
+ * in sharely_clicks, and the counts networks report in sharely_counts.
  *
  * @package KraftySprouts\Sharely
  * @since 1.0.0

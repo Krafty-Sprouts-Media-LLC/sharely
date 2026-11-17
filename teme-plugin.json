@@ -19,7 +19,8 @@
         { "key": "refresh-counts", "label": "Refresh share counts from the networks", "long": true, "tries": 2, "backoff": [300, 1800] },
         { "key": "shorten", "label": "Make short links for shared articles", "tries": 2, "backoff": [120, 600] },
         { "key": "panel-preview", "label": "Preview how this item looks when shared", "tries": 1 },
-        { "key": "panel-options", "label": "Save Sharely's options for this item", "tries": 1 }
+        { "key": "panel-options", "label": "Save Sharely's options for this item", "tries": 1 },
+        { "key": "apply-import", "label": "Apply the settings imported from Novashare", "tries": 1 }
     ],
     "schedules": [
         { "job": "sync-items", "every": "hour" },
@@ -55,7 +56,6 @@
             { "key": "types", "section": "placement", "type": "multiselect", "label": "Content types", "description": "The kinds of item that get share buttons.", "default": ["post"], "options": { "post": "Posts", "page": "Pages" } },
             { "key": "other_types", "section": "placement", "type": "text", "label": "Other content types", "description": "The keys of any other content types, separated by commas.", "example": "recipe, review", "maxLength": 300 },
             { "key": "floating", "section": "placement", "type": "select", "label": "Floating bar", "description": "A bar of share buttons that stays on screen. A side bar shows only on screens wide enough for it.", "default": "none", "options": { "none": "None", "left": "On the left side", "right": "On the right side", "bottom": "Along the bottom" } },
-            { "key": "floating_phone", "section": "placement", "type": "boolean", "label": "Floating bar along the bottom on phones", "description": "On small screens, where a side bar has no room, show the floating bar along the bottom instead.", "default": true, "visibleWhen": { "floating": ["left", "right"] } },
             { "key": "heading", "section": "placement", "type": "text", "label": "Heading", "description": "A line above the buttons in articles. Leave empty for none.", "default": "Share this", "maxLength": 80 },
 
             { "key": "networks", "section": "networks", "type": "repeater", "label": "Share buttons", "description": "The networks, in the order they show.", "itemLabel": "network", "itemTitle": "network", "minItems": 1, "maxItems": 24, "fields": [
@@ -113,7 +113,8 @@
         ],
         "actions": [
             { "id": "sync", "label": "Bring the article list up to date", "description": "Reads every published article's title and address now, instead of within the hour.", "job": "sync-items" },
-            { "id": "counts", "label": "Refresh share counts now", "description": "Asks the networks you ticked for their counts now.", "job": "refresh-counts" }
+            { "id": "counts", "label": "Refresh share counts now", "description": "Asks the networks you ticked for their counts now.", "job": "refresh-counts" },
+            { "id": "import", "label": "Apply the Novashare settings", "description": "After importing a WordPress site that used Novashare, saves its settings here. Tools › Jobs then lists what to set by hand.", "job": "apply-import" }
         ],
         "permissions": [
             { "id": "report", "label": "See Sharely's share report", "description": "Which articles and networks are shared most, from Sharely's own counts.", "roles": ["editor"] }

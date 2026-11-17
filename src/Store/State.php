@@ -1,7 +1,9 @@
 <?php
 
 /**
- * A few named values Sharely keeps, as JSON.
+ * A few named values Sharely keeps in sharely_state as JSON, such as the
+ * copy of its settings its public routes read: Teme builds a route handler
+ * with none of the plugin's doors, so it can't read the settings itself.
  *
  * @package KraftySprouts\Sharely
  * @since 1.0.0
