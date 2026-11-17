@@ -1,0 +1,37 @@
+{
+    "name": "krafty-sprouts/sharely",
+    "description": "Sharely for TemeCMS: share buttons, a floating share bar, share counts kept on the site, Pinterest, highlight-to-share and follow buttons.",
+    "type": "teme-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [{ "name": "Krafty Sprouts Media, LLC" }],
+    "require": {
+        "php": "^8.4",
+        "teme/contracts": "*"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../teme-dev/packages/teme-contracts",
+            "options": { "symlink": false, "versions": { "teme/contracts": "1.0.0" } }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "KraftySprouts\\Sharely\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "KraftySprouts\\Sharely\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": { "pestphp/pest-plugin": true },
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
