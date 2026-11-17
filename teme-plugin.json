@@ -1,0 +1,182 @@
+{
+    "manifest": 1,
+    "name": "krafty-sprouts/sharely",
+    "code": "sharely",
+    "label": "Sharely",
+    "description": "Share buttons in your articles and a floating share bar, follow buttons, highlight-to-share, Pinterest pins and a share report. Counts share clicks on your own site without cookies or addresses. Only if you turn them on, asks Facebook, Pinterest, Reddit or Hacker News for an article's share count, and Bitly for short links.",
+    "version": "1.0.0",
+    "requires": {
+        "teme": "^1.0"
+    },
+    "plugin": "KraftySprouts\\Sharely\\Sharely",
+    "author": "Krafty Sprouts Media, LLC",
+    "license": "GPL-2.0-or-later",
+    "capabilities": ["content.read", "content.insert", "pages.insert", "jobs", "http", "routes.public", "import.wordpress"],
+    "hosts": ["graph.facebook.com", "widgets.pinterest.com", "www.reddit.com", "hn.algolia.com", "api-ssl.bitly.com"],
+    "hooks": ["ContentPublished", "ContentUnpublished", "ContentTrashed", "ContentDeleted", "SettingsChanged"],
+    "jobs": [
+        { "key": "sync-items", "label": "Bring Sharely's list of articles up to date", "long": true, "tries": 3 },
+        { "key": "refresh-counts", "label": "Refresh share counts from the networks", "long": true, "tries": 2, "backoff": [300, 1800] },
+        { "key": "shorten", "label": "Make short links for shared articles", "tries": 2, "backoff": [120, 600] },
+        { "key": "panel-preview", "label": "Preview how this item looks when shared", "tries": 1 },
+        { "key": "panel-options", "label": "Save Sharely's options for this item", "tries": 1 }
+    ],
+    "schedules": [
+        { "job": "sync-items", "every": "hour" },
+        { "job": "refresh-counts", "every": "day", "enabledBy": "fetch_counts", "everyFrom": "counts_every" },
+        { "job": "shorten", "every": "hour" }
+    ],
+    "routes": [
+        { "id": "go", "method": "GET", "path": "/{code}/go/{network}/{item}", "handler": "KraftySprouts\\Sharely\\Routes\\GoRoute", "where": { "network": "[a-z]{1,20}", "item": "[0-9a-z]{26}" }, "throttle": 60 },
+        { "id": "mastodon", "method": "GET", "path": "/{code}/mastodon/{item}", "handler": "KraftySprouts\\Sharely\\Routes\\MastodonRoute", "where": { "item": "[0-9a-z]{26}" } },
+        { "id": "asset", "method": "GET", "path": "/{code}/assets/{file}", "handler": "KraftySprouts\\Sharely\\Routes\\AssetRoute", "where": { "file": "[a-z]{2,20}\\.(?:js|css)" }, "cache": { "lifetime": 60 }, "throttle": 240 }
+    ],
+    "imports": {
+        "importer": "KraftySprouts\\Sharely\\Import\\NovashareImporter",
+        "options": ["novashare", "widget_novashare_follow_widget"]
+    },
+    "owns": {
+        "tables": ["sharely_items", "sharely_addresses", "sharely_clicks", "sharely_counts", "sharely_state"]
+    },
+    "contributes": {
+        "fixedLabel": "Share",
+        "settingsSections": [
+            { "id": "placement", "label": "Where the buttons show" },
+            { "id": "networks", "label": "Networks", "description": "Each network on or off, in the order you put them." },
+            { "id": "look", "label": "How the buttons look", "description": "Drawn with your theme's own colours and spacing." },
+            { "id": "counts", "label": "Share counts" },
+            { "id": "pinterest", "label": "Pinterest" },
+            { "id": "text", "label": "Quotes and highlights" },
+            { "id": "follow", "label": "Follow buttons" },
+            { "id": "links", "label": "Shared links" }
+        ],
+        "settings": [
+            { "key": "inline_position", "section": "placement", "type": "select", "label": "Buttons in articles", "description": "Where the share buttons sit in an article.", "default": "above", "options": { "above": "Above the article", "below": "Below the article", "both": "Above and below", "none": "Nowhere" } },
+            { "key": "types", "section": "placement", "type": "multiselect", "label": "Content types", "description": "The kinds of item that get share buttons.", "default": ["post"], "options": { "post": "Posts", "page": "Pages" } },
+            { "key": "other_types", "section": "placement", "type": "text", "label": "Other content types", "description": "The keys of any other content types, separated by commas.", "example": "recipe, review", "maxLength": 300 },
+            { "key": "floating", "section": "placement", "type": "select", "label": "Floating bar", "description": "A bar of share buttons that stays on screen. A side bar shows only on screens wide enough for it.", "default": "none", "options": { "none": "None", "left": "On the left side", "right": "On the right side", "bottom": "Along the bottom" } },
+            { "key": "floating_phone", "section": "placement", "type": "boolean", "label": "Floating bar along the bottom on phones", "description": "On small screens, where a side bar has no room, show the floating bar along the bottom instead.", "default": true, "visibleWhen": { "floating": ["left", "right"] } },
+            { "key": "heading", "section": "placement", "type": "text", "label": "Heading", "description": "A line above the buttons in articles. Leave empty for none.", "default": "Share this", "maxLength": 80 },
+
+            { "key": "networks", "section": "networks", "type": "repeater", "label": "Share buttons", "description": "The networks, in the order they show.", "itemLabel": "network", "itemTitle": "network", "minItems": 1, "maxItems": 24, "fields": [
+                { "key": "network", "type": "select", "label": "Network", "description": "The network or tool this button shares to.", "options": { "x": "X", "facebook": "Facebook", "linkedin": "LinkedIn", "bluesky": "Bluesky", "threads": "Threads", "mastodon": "Mastodon (readers choose their server)", "whatsapp": "WhatsApp", "telegram": "Telegram", "reddit": "Reddit", "pinterest": "Pinterest", "flipboard": "Flipboard", "tumblr": "Tumblr", "buffer": "Buffer", "line": "LINE", "messenger": "Messenger (phones only)", "vk": "VK", "hackernews": "Hacker News", "email": "Email", "sms": "Text message", "print": "Print", "copy": "Copy link", "sheet": "The device's own share menu" } }
+            ], "default": [{ "network": "x" }, { "network": "facebook" }, { "network": "linkedin" }, { "network": "bluesky" }, { "network": "email" }, { "network": "copy" }] },
+            { "key": "more_after", "section": "networks", "type": "number", "label": "More button after", "description": "Show this many buttons, then a More button that opens the rest. 0 shows them all.", "default": 0, "min": 0, "max": 24, "unit": "buttons" },
+            { "key": "phone_set", "section": "networks", "type": "boolean", "label": "A different set on phones", "description": "Show other buttons on small screens, such as WhatsApp and the device's own share menu.", "default": false },
+            { "key": "phone_networks", "section": "networks", "type": "repeater", "label": "Share buttons on phones", "description": "The networks small screens show, in order.", "itemLabel": "network", "itemTitle": "network", "maxItems": 24, "visibleWhen": { "phone_set": true }, "fields": [
+                { "key": "network", "type": "select", "label": "Network", "description": "The network or tool this button shares to.", "options": { "x": "X", "facebook": "Facebook", "linkedin": "LinkedIn", "bluesky": "Bluesky", "threads": "Threads", "mastodon": "Mastodon (readers choose their server)", "whatsapp": "WhatsApp", "telegram": "Telegram", "reddit": "Reddit", "pinterest": "Pinterest", "flipboard": "Flipboard", "tumblr": "Tumblr", "buffer": "Buffer", "line": "LINE", "messenger": "Messenger", "vk": "VK", "hackernews": "Hacker News", "email": "Email", "sms": "Text message", "print": "Print", "copy": "Copy link", "sheet": "The device's own share menu" } }
+            ], "default": [{ "network": "sheet" }, { "network": "whatsapp" }, { "network": "x" }, { "network": "facebook" }, { "network": "copy" }] },
+            { "key": "phone_width", "section": "networks", "type": "number", "label": "Phone screens are narrower than", "description": "Below this width the phone set shows; from it, the main set.", "default": 768, "min": 320, "max": 1600, "unit": "pixels", "visibleWhen": { "phone_set": true } },
+
+            { "key": "shape", "section": "look", "type": "select", "label": "Shape", "description": "The buttons' corners.", "default": "rounded", "options": { "square": "Square", "rounded": "Rounded", "pill": "Pill", "circle": "Circle (icons only)" } },
+            { "key": "size", "section": "look", "type": "select", "label": "Size", "description": "How big the buttons are.", "default": "medium", "options": { "small": "Small", "medium": "Medium", "large": "Large" } },
+            { "key": "labels", "section": "look", "type": "select", "label": "Labels", "description": "Whether the buttons show the network's name beside its icon. Every button is named for screen readers either way.", "default": "icons", "options": { "icons": "Icons only", "labels": "Icons and names" } },
+            { "key": "colors", "section": "look", "type": "select", "label": "Colours", "description": "Network colours, your site's accent from Settings › Design, or quiet outlined buttons in your theme's text colour.", "default": "brand", "options": { "brand": "Network colours", "accent": "The site's accent", "plain": "Outlined, in the theme's colours" } },
+            { "key": "align", "section": "look", "type": "select", "label": "Alignment", "description": "Where the row of buttons sits.", "default": "start", "options": { "start": "At the start", "center": "In the middle", "end": "At the end", "fill": "Filling the width" } },
+
+            { "key": "count_clicks", "section": "counts", "type": "boolean", "label": "Count share clicks", "description": "Counts each click on a share button on your own site: the article, the network and the day. No cookies, no addresses, nothing about the reader.", "default": true },
+            { "key": "show_counts", "section": "counts", "type": "boolean", "label": "Show counts on the buttons", "description": "Shows how often an article was shared.", "default": false },
+            { "key": "show_total", "section": "counts", "type": "boolean", "label": "Show the total", "description": "Shows the total number of shares beside the buttons.", "default": true, "visibleWhen": { "show_counts": true } },
+            { "key": "min_count", "section": "counts", "type": "number", "label": "Hide counts below", "description": "No number shows until an article has been shared this many times.", "default": 10, "min": 0, "max": 100000, "unit": "shares", "visibleWhen": { "show_counts": true } },
+            { "key": "fetch_counts", "section": "counts", "type": "boolean", "label": "Ask networks for their counts", "description": "Once a day or as often as you choose, a background job asks the networks you tick below how often each article was shared there. It sends them each article's address. Never while a page loads.", "default": false },
+            { "key": "count_networks", "section": "counts", "type": "multiselect", "label": "Networks to ask", "description": "Facebook needs an access token. Pinterest's and Reddit's counts come from addresses they don't promise to keep.", "default": ["hackernews"], "options": { "facebook": "Facebook", "pinterest": "Pinterest", "reddit": "Reddit", "hackernews": "Hacker News" }, "visibleWhen": { "fetch_counts": true } },
+            { "key": "counts_every", "section": "counts", "type": "select", "label": "How often", "description": "How often the counts are asked for.", "default": "day", "options": { "hour": "Every hour", "day": "Every day", "week": "Every week" }, "visibleWhen": { "fetch_counts": true } },
+            { "key": "facebook_token", "section": "counts", "type": "secret", "label": "Facebook access token", "description": "An app access token from Meta for Developers, written as the app's ID, a | and its secret. Kept encrypted.", "visibleWhen": { "fetch_counts": true } },
+            { "key": "old_domain", "section": "counts", "type": "text", "label": "Your site's old address", "description": "If the site moved from another domain, its old address, such as https://old.example.com, so counts made there still count.", "maxLength": 200, "visibleWhen": { "fetch_counts": true } },
+
+            { "key": "pin_images", "section": "pinterest", "type": "boolean", "label": "Pin buttons on images", "description": "Adds a Pinterest button to the images in an article. Decorative images, and images with an empty description, get none.", "default": false },
+            { "key": "pin_min_width", "section": "pinterest", "type": "number", "label": "Smallest image to pin", "description": "Images narrower than this get no pin button.", "default": 200, "min": 50, "max": 2000, "unit": "pixels", "visibleWhen": { "pin_images": true } },
+            { "key": "pin_corner", "section": "pinterest", "type": "select", "label": "Pin button corner", "description": "Where the pin button sits on an image.", "default": "top-start", "options": { "top-start": "Top, at the start", "top-end": "Top, at the end", "bottom-start": "Bottom, at the start", "bottom-end": "Bottom, at the end" }, "visibleWhen": { "pin_images": true } },
+            { "key": "pin_pick", "section": "pinterest", "type": "boolean", "label": "Let readers pick the image", "description": "When an article has several images, the Pinterest share button lets the reader choose which one to pin.", "default": true },
+
+            { "key": "highlight", "section": "text", "type": "boolean", "label": "Highlight to share", "description": "When a reader selects words in an article, by mouse, touch or keyboard, a small bar offers to share them.", "default": false },
+            { "key": "highlight_networks", "section": "text", "type": "multiselect", "label": "Highlight networks", "description": "What the highlight bar offers.", "default": ["x", "bluesky", "threads", "copy"], "options": { "x": "X", "bluesky": "Bluesky", "threads": "Threads", "mastodon": "Mastodon", "linkedin": "LinkedIn", "whatsapp": "WhatsApp", "telegram": "Telegram", "reddit": "Reddit", "buffer": "Buffer", "hackernews": "Hacker News", "email": "Email", "copy": "Copy" }, "visibleWhen": { "highlight": true } },
+            { "key": "quote_buttons", "section": "text", "type": "boolean", "label": "Share buttons on quotes", "description": "Adds a share button under each quote in an article, so a reader can share the quote's words.", "default": false },
+
+            { "key": "follow", "section": "follow", "type": "repeater", "label": "Your profiles", "description": "The site's own profiles, in order. For the site's feed choose RSS and leave the address empty.", "itemLabel": "profile", "itemTitle": "network", "maxItems": 24, "fields": [
+                { "key": "network", "type": "select", "label": "Network", "description": "Where the profile is.", "options": { "x": "X", "facebook": "Facebook", "linkedin": "LinkedIn", "bluesky": "Bluesky", "threads": "Threads", "mastodon": "Mastodon", "whatsapp": "WhatsApp", "telegram": "Telegram", "reddit": "Reddit", "pinterest": "Pinterest", "flipboard": "Flipboard", "tumblr": "Tumblr", "line": "LINE", "vk": "VK", "email": "Email", "rss": "RSS (the site's feed)" } },
+                { "key": "address", "type": "text", "label": "Address", "description": "The profile's address, or for email the address to write to.", "maxLength": 300 }
+            ] },
+            { "key": "follow_place", "section": "follow", "type": "select", "label": "Where follow buttons show", "description": "Before or after one of your theme's regions on every page, or after each article.", "default": "none", "options": { "none": "Nowhere", "after-content": "After each article", "region": "Beside a theme region" } },
+            { "key": "follow_region", "section": "follow", "type": "text", "label": "Region", "description": "The region's slug, as your theme names it, such as sidebar or footer.", "maxLength": 64, "visibleWhen": { "follow_place": "region" } },
+            { "key": "follow_region_where", "section": "follow", "type": "select", "label": "Before or after the region", "description": "Which side of the region the buttons go.", "default": "after", "options": { "before": "Before it", "after": "After it" }, "visibleWhen": { "follow_place": "region" } },
+            { "key": "follow_heading", "section": "follow", "type": "text", "label": "Follow heading", "description": "A line above the follow buttons. Leave empty for none.", "default": "Follow us", "maxLength": 80 },
+
+            { "key": "utm", "section": "links", "type": "boolean", "label": "Add UTM tags", "description": "Adds utm_source, utm_medium and utm_campaign to shared addresses, so your analytics can tell where visits came from. {network} becomes the network's name.", "default": false },
+            { "key": "utm_source", "section": "links", "type": "text", "label": "Source", "description": "utm_source.", "default": "{network}", "maxLength": 60, "visibleWhen": { "utm": true } },
+            { "key": "utm_medium", "section": "links", "type": "text", "label": "Medium", "description": "utm_medium.", "default": "social", "maxLength": 60, "visibleWhen": { "utm": true } },
+            { "key": "utm_campaign", "section": "links", "type": "text", "label": "Campaign", "description": "utm_campaign.", "default": "sharely", "maxLength": 60, "visibleWhen": { "utm": true } },
+            { "key": "x_account", "section": "links", "type": "text", "label": "Your X account", "description": "Named as \"via\" when someone shares to X, such as @example.", "maxLength": 16 },
+            { "key": "mastodon_server", "section": "links", "type": "text", "label": "Suggested Mastodon server", "description": "The server readers are offered first when they share to Mastodon. They can type their own, and their device remembers it.", "default": "mastodon.social", "maxLength": 100 },
+            { "key": "shortener", "section": "links", "type": "select", "label": "Short links", "description": "Shortens shared addresses with a service you connect. Each article's address is sent to it once. Short links replace the UTM tags.", "default": "none", "options": { "none": "No short links", "bitly": "Bitly" } },
+            { "key": "bitly_token", "section": "links", "type": "secret", "label": "Bitly access token", "description": "From your Bitly account's settings. Kept encrypted.", "visibleWhen": { "shortener": "bitly" } }
+        ],
+        "actions": [
+            { "id": "sync", "label": "Bring the article list up to date", "description": "Reads every published article's title and address now, instead of within the hour.", "job": "sync-items" },
+            { "id": "counts", "label": "Refresh share counts now", "description": "Asks the networks you ticked for their counts now.", "job": "refresh-counts" }
+        ],
+        "permissions": [
+            { "id": "report", "label": "See Sharely's share report", "description": "Which articles and networks are shared most, from Sharely's own counts.", "roles": ["editor"] }
+        ],
+        "area": {
+            "label": "Shares",
+            "description": "Which articles and networks are shared most.",
+            "permission": "report",
+            "menu": "site",
+            "pages": [
+                { "id": "overview", "label": "Overview", "blocks": [
+                    { "type": "figures", "items": [
+                        { "id": "clicks-30", "label": "Share clicks, last 30 days", "format": "number" },
+                        { "id": "clicks-all", "label": "Share clicks, all time", "format": "number" },
+                        { "id": "network-counts", "label": "Shares the networks report", "format": "number" },
+                        { "id": "top-network", "label": "Most used network, last 30 days", "format": "text" }
+                    ] },
+                    { "type": "chart", "id": "per-day", "label": "Share clicks a day", "kind": "bar", "series": [ { "id": "clicks", "label": "Share clicks" } ] },
+                    { "type": "table", "record": "items", "columns": [
+                        { "id": "title", "label": "Article", "kind": "text" },
+                        { "id": "clicks", "label": "Share clicks", "kind": "number", "sortable": true },
+                        { "id": "counts", "label": "Network counts", "kind": "number", "sortable": true },
+                        { "id": "top", "label": "Top network", "kind": "badge" }
+                    ], "search": true, "perPage": 25 }
+                ] },
+                { "id": "networks", "label": "Networks", "blocks": [
+                    { "type": "table", "record": "networks", "columns": [
+                        { "id": "network", "label": "Network", "kind": "text" },
+                        { "id": "clicks-30", "label": "Last 30 days", "kind": "number", "sortable": true },
+                        { "id": "clicks", "label": "All time", "kind": "number", "sortable": true },
+                        { "id": "counts", "label": "Reported by the network", "kind": "number", "sortable": true }
+                    ], "perPage": 25 }
+                ] }
+            ],
+            "records": [
+                { "id": "items", "label": "Article", "plural": "Articles", "titleField": "title", "sections": [
+                    { "id": "shares", "label": "Shares", "fields": [
+                        { "key": "title", "type": "text", "label": "Title" },
+                        { "key": "url", "type": "url", "label": "Address" },
+                        { "key": "summary", "type": "textarea", "label": "Shares by network", "description": "Share clicks counted here, and counts the networks report." }
+                    ] }
+                ] },
+                { "id": "networks", "label": "Network", "plural": "Networks", "titleField": "network", "sections": [
+                    { "id": "shares", "label": "Shares", "fields": [
+                        { "key": "network", "type": "text", "label": "Network" },
+                        { "key": "summary", "type": "textarea", "label": "Most shared articles" }
+                    ] }
+                ] }
+            ]
+        },
+        "editorPanels": [
+            { "id": "sharing", "label": "Sharing", "description": "How this item looks when shared, and Sharely's options for it.", "icon": "send", "types": ["post", "page"], "actions": [
+                { "id": "preview", "label": "Preview sharing", "job": "panel-preview" },
+                { "id": "options", "label": "Save sharing options", "job": "panel-options", "fields": [
+                    { "key": "off", "type": "boolean", "label": "No share buttons on this item", "default": false },
+                    { "key": "share_text", "type": "text", "label": "Words to post with the link", "maxLength": 280 },
+                    { "key": "pin_description", "type": "textarea", "label": "Pinterest description", "maxLength": 500 },
+                    { "key": "pin_image", "type": "text", "label": "Pinterest image address", "maxLength": 500 }
+                ] }
+            ] }
+        ],
+        "admin": [
+            { "surface": "tools", "id": "sharely", "label": "Sharely", "description": "Share buttons, counts and follow buttons.", "icon": "send", "to": "settings" }
+        ]
+    }
+}

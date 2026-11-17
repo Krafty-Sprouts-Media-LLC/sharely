@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Builds each network's own share address for an item: the plain link a
+ * button opens with no script at all.
+ *
+ * @package KraftySprouts\Sharely
+ * @since 1.0.0
+ */
+
 declare(strict_types=1);
 
 namespace KraftySprouts\Sharely\Links;

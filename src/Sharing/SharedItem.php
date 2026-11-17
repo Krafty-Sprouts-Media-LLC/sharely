@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * One published item as Sharely shares it: its address and the words and
+ * image a network is given, with the item's own overrides already chosen.
+ *
+ * @package KraftySprouts\Sharely
+ * @since 1.0.0
+ */
+
 declare(strict_types=1);
 
 namespace KraftySprouts\Sharely\Sharing;

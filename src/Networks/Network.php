@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * One network or utility Sharely can draw a button for: its name, its
+ * brand colour, how its button works, and the roles it can take.
+ *
+ * @package KraftySprouts\Sharely
+ * @since 1.0.0
+ */
+
 declare(strict_types=1);
 
 namespace KraftySprouts\Sharely\Networks;

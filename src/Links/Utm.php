@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * The UTM tags Sharely adds to a shared address, each a pattern in which
+ * {network} becomes the network's id, so a site's analytics can tell which
+ * network a visit came from.
+ *
+ * @package KraftySprouts\Sharely
+ * @since 1.0.0
+ */
+
 declare(strict_types=1);
 
 namespace KraftySprouts\Sharely\Links;

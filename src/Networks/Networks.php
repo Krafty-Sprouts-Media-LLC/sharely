@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Every network and utility Sharely knows, in the order the settings offer
+ * them.
+ *
+ * @package KraftySprouts\Sharely
+ * @since 1.0.0
+ */
+
 declare(strict_types=1);
 
 namespace KraftySprouts\Sharely\Networks;

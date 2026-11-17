@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Tests for share links.
+ *
+ * @package KraftySprouts\Sharely
+ * @since 1.0.0
+ */
+
 declare(strict_types=1);
 
 use KraftySprouts\Sharely\Links\ShareLinks;

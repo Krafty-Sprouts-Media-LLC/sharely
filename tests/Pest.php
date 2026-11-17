@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Pest bootstrap and the helpers every test shares.
+ *
+ * @package KraftySprouts\Sharely
+ * @since 1.0.0
+ */
+
 declare(strict_types=1);
 
 // Teme gives __() on a live site, and the plugin's words go through it.
