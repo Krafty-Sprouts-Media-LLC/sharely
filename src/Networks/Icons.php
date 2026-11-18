@@ -23,7 +23,7 @@ namespace KraftySprouts\Sharely\Networks;
 /**
  * Answers one small inline SVG per network or interface glyph. The marks are
  * simplified shapes drawn for Sharely, not copies of any brand's artwork;
- * they take their colour from the text around them (currentColor).
+ * they take their color from the text around them (currentColor).
  *
  * @since 1.0.0
  */
@@ -140,7 +140,7 @@ final class Icons
             'close' => self::line('M6 6l12 12M18 6L6 18', 2.2),
             // A push pin.
             'pin' => self::fill('M8.5 3h7v1.5l-1.5 1V10l3 3v1.5H7V13l3-3V5.5l-1.5-1zM11.2 14.5h1.6l-.8 6.5z'),
-            // A tick.
+            // A check mark.
             'check' => self::line('M4.5 12.5l5 5 10-11', 2.5),
         ];
     }

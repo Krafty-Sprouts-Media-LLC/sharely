@@ -14,7 +14,7 @@ namespace KraftySprouts\Sharely\Networks;
 
 /**
  * Every network and utility Sharely knows, in the order the settings offer
- * them. Brand colours are the networks' published ones.
+ * them. Brand colors are the networks' published ones.
  *
  * @since 1.0.0
  */

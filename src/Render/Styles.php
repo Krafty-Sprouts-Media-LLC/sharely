@@ -2,8 +2,8 @@
 
 /**
  * Sharely's stylesheet, drawn with the active theme's tokens (its accent,
- * text colour, rules, spacing and type steps) so the buttons fit any
- * theme, with each network's colour and the phone width from the settings.
+ * text color, rules, spacing and type steps) so the buttons fit any theme,
+ * with each network's color and the phone width from the settings.
  *
  * @package KraftySprouts\Sharely
  * @since 1.0.0
@@ -19,8 +19,8 @@ use KraftySprouts\Sharely\Sharing\Config;
 
 /**
  * Sharely's stylesheet, drawn with the active theme's tokens (its accent,
- * text colour, rules, spacing and type steps) so the buttons fit any theme,
- * with each network's colour and the phone width from the settings.
+ * text color, rules, spacing and type steps) so the buttons fit any theme,
+ * with each network's color and the phone width from the settings.
  *
  * @since 1.0.0
  */

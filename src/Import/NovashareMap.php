@@ -69,7 +69,7 @@ final class NovashareMap
     private const array COUNTED = ['pinterest', 'reddit'];
 
     /**
-     * Novashare's corners for pin buttons, as Sharely's; centre has none.
+     * Novashare's corners for pin buttons, as Sharely's; center has none.
      *
      * @since 1.0.0
      */

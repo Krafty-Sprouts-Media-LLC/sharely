@@ -44,7 +44,7 @@
         "settingsSections": [
             { "id": "placement", "label": "Where the buttons show" },
             { "id": "networks", "label": "Networks", "description": "Each network on or off, in the order you put them." },
-            { "id": "look", "label": "How the buttons look", "description": "Drawn with your theme's own colours and spacing." },
+            { "id": "look", "label": "How the buttons look", "description": "Drawn with your theme's own colors and spacing." },
             { "id": "counts", "label": "Share counts" },
             { "id": "pinterest", "label": "Pinterest" },
             { "id": "text", "label": "Quotes and highlights" },
@@ -71,14 +71,14 @@
             { "key": "shape", "section": "look", "type": "select", "label": "Shape", "description": "The buttons' corners.", "default": "rounded", "options": { "square": "Square", "rounded": "Rounded", "pill": "Pill", "circle": "Circle (icons only)" } },
             { "key": "size", "section": "look", "type": "select", "label": "Size", "description": "How big the buttons are.", "default": "medium", "options": { "small": "Small", "medium": "Medium", "large": "Large" } },
             { "key": "labels", "section": "look", "type": "select", "label": "Labels", "description": "Whether the buttons show the network's name beside its icon. Every button is named for screen readers either way.", "default": "icons", "options": { "icons": "Icons only", "labels": "Icons and names" } },
-            { "key": "colors", "section": "look", "type": "select", "label": "Colours", "description": "Network colours, your site's accent from Settings › Design, or quiet outlined buttons in your theme's text colour.", "default": "brand", "options": { "brand": "Network colours", "accent": "The site's accent", "plain": "Outlined, in the theme's colours" } },
+            { "key": "colors", "section": "look", "type": "select", "label": "Colors", "description": "Network colors, your site's accent from Settings › Design, or quiet outlined buttons in your theme's text color.", "default": "brand", "options": { "brand": "Network colors", "accent": "The site's accent", "plain": "Outlined, in the theme's colors" } },
             { "key": "align", "section": "look", "type": "select", "label": "Alignment", "description": "Where the row of buttons sits.", "default": "start", "options": { "start": "At the start", "center": "In the middle", "end": "At the end", "fill": "Filling the width" } },
 
-            { "key": "count_clicks", "section": "counts", "type": "boolean", "label": "Count share clicks", "description": "Counts each click on a share button on your own site: the article, the network and the day. No cookies, no addresses, nothing about the reader.", "default": true },
+            { "key": "count_clicks", "section": "counts", "type": "boolean", "label": "Count share clicks", "description": "Off until you turn it on. When on, a click on a share button passes through your site, which adds one to that article's count for that network and day, then sends the reader on. No cookies, nothing about the reader is kept, and one address is counted once per article every ten minutes, so repeated requests can't inflate a count. Sharing works the same either way.", "default": false },
             { "key": "show_counts", "section": "counts", "type": "boolean", "label": "Show counts on the buttons", "description": "Shows how often an article was shared.", "default": false },
             { "key": "show_total", "section": "counts", "type": "boolean", "label": "Show the total", "description": "Shows the total number of shares beside the buttons.", "default": true, "visibleWhen": { "show_counts": true } },
             { "key": "min_count", "section": "counts", "type": "number", "label": "Hide counts below", "description": "No number shows until an article has been shared this many times.", "default": 10, "min": 0, "max": 100000, "unit": "shares", "visibleWhen": { "show_counts": true } },
-            { "key": "fetch_counts", "section": "counts", "type": "boolean", "label": "Ask networks for their counts", "description": "Once a day or as often as you choose, a background job asks the networks you tick below how often each article was shared there. It sends them each article's address. Never while a page loads.", "default": false },
+            { "key": "fetch_counts", "section": "counts", "type": "boolean", "label": "Ask networks for their counts", "description": "Once a day or as often as you choose, a background job asks the networks you check below how often each article was shared there. It sends them each article's address. Never while a page loads.", "default": false },
             { "key": "count_networks", "section": "counts", "type": "multiselect", "label": "Networks to ask", "description": "Facebook needs an access token. Pinterest's and Reddit's counts come from addresses they don't promise to keep.", "default": ["hackernews"], "options": { "facebook": "Facebook", "pinterest": "Pinterest", "reddit": "Reddit", "hackernews": "Hacker News" }, "visibleWhen": { "fetch_counts": true } },
             { "key": "counts_every", "section": "counts", "type": "select", "label": "How often", "description": "How often the counts are asked for.", "default": "day", "options": { "hour": "Every hour", "day": "Every day", "week": "Every week" }, "visibleWhen": { "fetch_counts": true } },
             { "key": "facebook_token", "section": "counts", "type": "secret", "label": "Facebook access token", "description": "An app access token from Meta for Developers, written as the app's ID, a | and its secret. Kept encrypted.", "visibleWhen": { "fetch_counts": true } },
@@ -113,7 +113,7 @@
         ],
         "actions": [
             { "id": "sync", "label": "Bring the article list up to date", "description": "Reads every published article's title and address now, instead of within the hour.", "job": "sync-items" },
-            { "id": "counts", "label": "Refresh share counts now", "description": "Asks the networks you ticked for their counts now.", "job": "refresh-counts" },
+            { "id": "counts", "label": "Refresh share counts now", "description": "Asks the networks you checked for their counts now.", "job": "refresh-counts" },
             { "id": "import", "label": "Apply the Novashare settings", "description": "After importing a WordPress site that used Novashare, saves its settings here. Tools › Jobs then lists what to set by hand.", "job": "apply-import" }
         ],
         "permissions": [

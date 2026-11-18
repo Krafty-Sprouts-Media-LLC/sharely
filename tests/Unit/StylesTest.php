@@ -13,14 +13,14 @@ use KraftySprouts\Sharely\Networks\Contrast;
 use KraftySprouts\Sharely\Render\Styles;
 use KraftySprouts\Sharely\Sharing\Config;
 
-it('picks white or black text, whichever reads better on a colour', function (): void {
+it('picks white or black text, whichever reads better on a color', function (): void {
     expect(Contrast::on('#000000'))->toBe('#ffffff')
         ->and(Contrast::on('#25d366'))->toBe('#000000')
         ->and(Contrast::on('#0a66c2'))->toBe('#ffffff')
         ->and(Contrast::ratio('#ffffff', '#0a66c2'))->toBeGreaterThan(4.5);
 });
 
-it('gives every network shown its colour, with readable text', function (): void {
+it('gives every network shown its color, with readable text', function (): void {
     $css = Styles::css(Config::fromSettings(['networks' => [['network' => 'whatsapp'], ['network' => 'linkedin']]]));
 
     expect($css)->toContain('.sharely--brand .sharely__btn--whatsapp{--sharely-bg:#25d366;--sharely-fg:#000000}')

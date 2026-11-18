@@ -184,7 +184,7 @@ final class Extras
             'mastodonHint' => __('Such as mastodon.social. Your device remembers it for next time.'),
             'share' => __('Share'),
             'cancel' => __('Cancel'),
-            'badServer' => __('That doesn’t look like a server’s address. Type its name, such as mastodon.social.'),
+            'badServer' => __('That doesn’t look like a public server’s name. Type just its name, such as mastodon.social, with no address numbers, port or path.'),
             'highlightBar' => __('Share the selected words'),
             'highlightReady' => __('Share buttons for your selection follow this paragraph.'),
             'shareQuote' => __('Share this quote'),

@@ -2,7 +2,7 @@
 
 /**
  * One network or utility Sharely can draw a button for: its name, its
- * brand colour, how its button works, and the roles it can take.
+ * brand color, how its button works, and the roles it can take.
  *
  * @package KraftySprouts\Sharely
  * @since 1.0.0
@@ -14,7 +14,7 @@ namespace KraftySprouts\Sharely\Networks;
 
 /**
  * One network or utility Sharely can draw a button for: its name, its
- * brand colour, how its button works, and the roles it can take.
+ * brand color, how its button works, and the roles it can take.
  *
  * @since 1.0.0
  */
@@ -32,7 +32,7 @@ final readonly class Network
     /**
      * @param  string  $id  the network's id, lower-case
      * @param  string  $name  its name as people know it; brand names are not translated
-     * @param  string  $color  its brand colour, #rrggbb
+     * @param  string  $color  its brand color, #rrggbb
      * @param  string  $kind  LINK, PAGE or SCRIPT
      * @param  bool  $share  whether it can share an item
      * @param  bool  $follow  whether the site can have a profile there for follow buttons

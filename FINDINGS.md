@@ -3,7 +3,7 @@
 Where Teme's public handbook was missing, wrong or unclear for building
 Sharely, and every missing socket ("wall"): what I expected, and what Sharely
 does instead. Nothing here was worked around by changing Teme. Read against
-Teme `main` at 4fbb9d48 (17 November 2026), contracts 1.0.0.
+Teme `main` at 4fbb9d48 (November 17, 2026), contracts 1.0.0.
 
 ## Walls (missing sockets)
 
@@ -176,7 +176,7 @@ the share report's "Novashare import" page.
 **Expected:** a panel that shows how the item will look on each network.
 **Found:** a panel shows a status line and suggestions, and each suggestion
 must carry a change.
-**Instead:** "Preview sharing" lists one suggestion per network, labelled
+**Instead:** "Preview sharing" lists one suggestion per network, labeled
 with the title that network's card shows ("X: Feeding roses in…"), its
 detail saying what is cut or missing; using it sets the social title to one
 that fits that network. It is a useful preview, but not a picture of the
@@ -262,7 +262,7 @@ item's ID, the revision the person saw, and the form's values" and shows
 `payload()['itemId']`, but not the key the values are under. Sharely reads
 `values`, `fields` or `form`, falling back to the top level (`Jobs\Payload`).
 
-### H-04 Insertions are re-serialised
+### H-04 Insertions are re-serialized
 
 Core re-writes inserted HTML: `defer` becomes `defer=""`, `hidden` becomes
 `hidden=""`. Harmless, but a plugin testing its markup by string meets it.

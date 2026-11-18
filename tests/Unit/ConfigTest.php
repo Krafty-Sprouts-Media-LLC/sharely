@@ -19,7 +19,7 @@ it('reads the declared defaults when nothing was saved', function (): void {
         ->and($config->networks)->toBe(['x', 'facebook', 'linkedin', 'bluesky', 'email', 'copy'])
         ->and($config->floating)->toBe('none')
         ->and($config->heading)->toBe('Share this')
-        ->and($config->countClicks)->toBeTrue()
+        ->and($config->countClicks)->toBeFalse()
         ->and($config->showCounts)->toBeFalse()
         ->and($config->minCount)->toBe(10)
         ->and($config->phoneWidth)->toBe(768)

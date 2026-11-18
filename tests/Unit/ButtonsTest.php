@@ -51,11 +51,18 @@ it('draws one named link per network, in the chosen order, each opening in a new
         ->and($links->item(1)->getAttribute('class'))->toContain('sharely__btn--x');
 });
 
-it('sends clicks through Sharely’s counting address when counting is on', function (): void {
-    $x = dom(buttons(['networks' => [['network' => 'facebook']]]));
+it('sends clicks through Sharely’s counting address when counting is turned on', function (): void {
+    $x = dom(buttons(['networks' => [['network' => 'facebook']], 'count_clicks' => true]));
 
     expect($x->query('//a[contains(@class,"sharely__btn--facebook")]')->item(0)->getAttribute('href'))
         ->toBe('/sharely/go/facebook/01jz0000000000000000000000');
+});
+
+it('links straight to the network, with no counting address, until counting is turned on', function (): void {
+    $x = dom(buttons(['networks' => [['network' => 'facebook']]]));
+
+    expect($x->query('//a[contains(@class,"sharely__btn--facebook")]')->item(0)->getAttribute('href'))
+        ->toStartWith('https://www.facebook.com/sharer/sharer.php?u=');
 });
 
 it('keeps mail and text messages in the same tab, and doesn’t count them', function (): void {

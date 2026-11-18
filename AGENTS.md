@@ -49,7 +49,12 @@ the code. Tests never reach the network: unit tests use the fakes in
 - Secrets only as `secret` settings read with `SecretReader`; never in a file,
   a test, a fixture, a log or an error message. Tests use made-up strings.
 - No reader tracking: no cookies, no addresses, no user agents stored. The
-  click counter keeps item, network, day and a number.
+  click counter (off by default) keeps item, network, day and a number. The
+  only thing derived from an address is a one-way key in the site's cache for
+  ten minutes (`Routes\Guard`), so repeated requests can't inflate a count.
+- Mastodon: only a public host name is accepted (`Routes\PublicHost`), a
+  signed "You’re leaving for…" page comes before any redirect, and a click
+  is counted only on Continue.
 - No JavaScript where none is needed: every share button is a plain link.
   Scripts (in `resources/js/`) are only for highlight-to-share, the Mastodon
   server picker, copy/print/share-sheet and pin buttons, each loaded only on
@@ -67,7 +72,7 @@ the code. Tests never reach the network: unit tests use the fakes in
 
 ```
 src/Sharely.php       the plugin class: doors, hooks, insertions, jobs, area, panel
-src/Networks/         the networks, their icons, colour contrast
+src/Networks/         the networks, their icons, color contrast
 src/Links/            share addresses, UTM tags, short links
 src/Sharing/          the item being shared and the settings it is drawn with
 src/Render/           the HTML and CSS of buttons, bars and follow buttons

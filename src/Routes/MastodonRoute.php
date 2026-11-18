@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Answers /sharely/mastodon/{item}: without a server, a small page asking
- * which server the reader uses; with ?server=, counts the share and sends
- * them to that server's share page.
+ * Answers /sharely/mastodon/{item}.
  *
  * @package KraftySprouts\Sharely
  * @since 1.0.0
@@ -14,8 +12,10 @@ declare(strict_types=1);
 namespace KraftySprouts\Sharely\Routes;
 
 use KraftySprouts\Sharely\Links\ShareLinks;
+use KraftySprouts\Sharely\Render\Buttons;
 use KraftySprouts\Sharely\Render\Html;
 use KraftySprouts\Sharely\Sharing\Config;
+use KraftySprouts\Sharely\Sharing\SharedItem;
 use KraftySprouts\Sharely\Store\Counts;
 use KraftySprouts\Sharely\Store\Items;
 use KraftySprouts\Sharely\Store\State;
@@ -24,11 +24,15 @@ use Teme\Contracts\Routes\PublicResponse;
 use Teme\Contracts\Routes\PublicRoute;
 
 /**
- * Answers /sharely/mastodon/{item}: without a server, a small page asking
- * which server the reader uses; with ?server=, counts the share and sends
- * them to that server's share page. Mastodon, Misskey, Sharkey, Firefish and
- * Iceshrimp all take /share?text=. The reader's device remembers the server
- * through the Mastodon script; Sharely keeps nothing.
+ * Answers /sharely/mastodon/{item}. Without a server it asks which server
+ * the reader uses. With ?server= it checks the name is a public host name
+ * (PublicHost) and shows a page that says "You’re leaving for that server
+ * to share this post", with a Continue link, never a redirect. Only
+ * the Continue link, signed for that item and server (Guard), redirects to
+ * the server's /share page, and only then is a click counted. Mastodon,
+ * Misskey, Sharkey, Firefish and Iceshrimp all take /share?text=. Sharely
+ * keeps nothing about the reader; their device remembers the server through
+ * the Mastodon script.
  *
  * @since 1.0.0
  */
@@ -46,21 +50,39 @@ final class MastodonRoute implements PublicRoute
         $config = Config::fromSettings((array) (new State)->get(State::SETTINGS, []));
         $text = $item->words().' '.(new ShareLinks($config->utm, $config->xAccount))->sharedUrl('mastodon', $item);
         $typed = (string) ($request->query['server'] ?? '');
-        $server = self::host($typed);
+        $server = PublicHost::from($typed);
 
-        if ($server !== null) {
-            if ($config->countClicks) {
-                (new Counts)->click($item->id, 'mastodon');
-            }
-
-            return Answers::redirect('https://'.$server.'/share?text='.rawurlencode($text));
+        if ($server === null) {
+            return $this->ask($item, $config, $typed);
         }
 
+        $guard = new Guard(new SiteKeys);
+        $go = (string) ($request->query['go'] ?? '');
+
+        if (! $guard->validToken($item->id, $server, $go)) {
+            return $this->leaving($item, $server, $text, $guard->token($item->id, $server));
+        }
+
+        if ($config->countClicks && $guard->allowClick($item->id, $request->clientAddress)) {
+            (new Counts)->click($item->id, 'mastodon');
+        }
+
+        return Answers::redirect('https://'.$server.'/share?text='.rawurlencode($text));
+    }
+
+    /**
+     * The page that asks which server the reader uses, with the reason when
+     * what they typed isn't a public host name.
+     *
+     * @since 1.0.0
+     */
+    private function ask(SharedItem $item, Config $config, string $typed): PublicResponse
+    {
         $error = $typed !== ''
-            ? '<p class="sharely-page__error" id="sharely-server-error">'.Html::e(__('That doesn’t look like a server’s address. Type its name, such as mastodon.social.')).'</p>'
+            ? '<p class="sharely-page__error" id="sharely-server-error">'.Html::e(__('That doesn’t look like a public server’s name. Type just its name, such as mastodon.social, with no address numbers, port or path.')).'</p>'
             : '';
         $body = '<p>'.Html::e(__('Mastodon has many servers. Type the name of yours, and Sharely sends you there to post:')).'</p>'
-            .'<blockquote class="sharely-page__quote">'.Html::e($text).'</blockquote>'
+            .'<blockquote class="sharely-page__quote">'.Html::e($item->words()).'</blockquote>'
             .'<form method="get" data-sharely-mastodon-form>'
             .'<label for="sharely-server">'.Html::e(__('Your server')).'</label>'
             .$error
@@ -75,24 +97,18 @@ final class MastodonRoute implements PublicRoute
     }
 
     /**
-     * The server's host name from what the reader typed, or null: a name
-     * with a dot, an optional port, no path; a scheme, a trailing slash and
-     * a handle such as @me@example.social are taken off.
+     * The page that says where the reader is going before they go.
      *
      * @since 1.0.0
      */
-    public static function host(string $typed): ?string
+    private function leaving(SharedItem $item, string $server, string $text, string $token): PublicResponse
     {
-        $host = strtolower(trim($typed));
-        $host = (string) preg_replace('#^[a-z][a-z0-9+.-]*://#', '', $host);
-        $host = rtrim($host, '/');
+        $continue = Buttons::MASTODON.$item->id.'?'.http_build_query(['server' => $server, 'go' => $token], '', '&', PHP_QUERY_RFC3986);
+        $body = '<p>'.Html::e(__(':server will open its own page to post this:', ['server' => $server])).'</p>'
+            .'<blockquote class="sharely-page__quote">'.Html::e($text).'</blockquote>'
+            .($token !== '' ? '<p><a class="sharely-page__continue" href="'.Html::e($continue).'">'.Html::e(__('Continue')).'</a></p>' : '<p class="sharely-page__error">'.Html::e(__('Sharely can’t make a safe link right now. Please try again in a moment.')).'</p>')
+            .'<p><a href="'.Html::e($item->url).'">'.Html::e(__('Cancel and go back to the article')).'</a></p>';
 
-        if (preg_match('/^@?[^@\s]+@([^@\s]+)$/', $host, $m) === 1) {
-            $host = $m[1];
-        }
-
-        return preg_match('/^(?=.{4,253}(?::\d{1,5})?$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{0,61}[a-z0-9](?::\d{1,5})?$/', $host) === 1
-            ? $host
-            : null;
+        return Answers::page(__('You’re leaving for :server to share this post', ['server' => $server]), $body);
     }
 }

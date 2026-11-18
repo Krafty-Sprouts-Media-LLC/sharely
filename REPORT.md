@@ -1,6 +1,6 @@
 # Report: Sharely 1.0.0
 
-Built 17 November 2026 in `C:\Users\kings\Downloads\Projects\teme-plugins\sharely`
+Built November 17, 2026 in `C:\Users\kings\Downloads\Projects\teme-plugins\sharely`
 (git, not pushed), against Teme `main` at 4fbb9d48, contracts 1.0.0.
 
 ## What works
@@ -14,15 +14,19 @@ testing kit, and in a browser on a page drawn by Sharely's own code:
 - **Inline buttons** on published articles of the chosen types, above, below
   or both; the heading; the More button (`<details>`, no script); the phone
   set switched by width; counts with a minimum and a total; four looks
-  (network colours, accent, outlined, labels) drawn with the theme's tokens.
+  (network colors, accent, outlined, labels) drawn with the theme's tokens.
 - **Floating bar** as a left or right rail or a bottom bar (Teme's fixed
   insertions).
-- **Click counting** through `/sharely/go/{network}/{item}`: counts and
-  redirects; refuses unknown items, drafts, networks not shown and script
-  networks, so it is no open redirect; stores item, network, day, number.
-- **Mastodon**: Sharely's own page asks for the server without a script and
-  redirects to `https://{server}/share?text=…`; with the script, a dialog
-  that remembers the server on the reader's device.
+- **Click counting**, off until turned on, through
+  `/sharely/go/{network}/{item}`: redirects always; counts only when on, and
+  at most one click per article per address in ten minutes; refuses unknown
+  items, drafts, networks not shown and script networks, so it is no open
+  redirect; stores item, network, day, number (see "Changes after review").
+- **Mastodon**: Sharely's own page asks for the server without a script;
+  only a public host name is accepted; a page says "You’re leaving for
+  {server} to share this post" with a Continue link, and only that signed
+  link redirects to `https://{server}/share?text=…` and counts; with the
+  script, a dialog that remembers the server on the reader's device.
 - **Scripts** served from `/sharely/assets/`, allowed by the pages' own
   `script-src 'self'`, each only where needed: copy/print/share sheet,
   Mastodon, highlight and quotes, pins and the image picker.
@@ -31,7 +35,7 @@ testing kit, and in a browser on a page drawn by Sharely's own code:
   images skipped), the Pinterest image picker.
 - **Follow buttons** with `rel="me"`, email and the site's feed, after
   articles or beside a region.
-- **Jobs**: sync of items and addresses; network counts (only the ticked
+- **Jobs**: sync of items and addresses; network counts (only the checked
   networks, nothing sent while off, the larger number kept, across old
   addresses); Bitly short links (token only in a header); the editor
   panel's preview and options; applying an imported Novashare setup.
@@ -69,12 +73,19 @@ Each is a missing Teme socket, written up in FINDINGS.md:
 
 ## Not done or not checked
 
-- **Not enabled on the teme-dev site.** Enabling it there from the console
-  was refused by this session's permission check, as it changes the shared
-  development database, and I didn't look for another way round. Every
-  behaviour was instead tested through the kit (which enables it in its own
-  database) and in a browser on a page Sharely's renderer drew. Steps to try
-  it on teme-dev are below.
+- **Not enabled on the teme-dev site, and why.** The first attempt, from the
+  console, was refused by this session's permission check, because it
+  changes the shared development database. When asked to try again, I
+  didn't: the owner had said in this session that they would enable it
+  themselves, and a request from another session can't change that. So
+  nothing in teme-dev's database was touched; every behavior was tested
+  through the kit (which enables it in its own database) and in a browser on
+  a page Sharely's renderer drew. Steps to try it on teme-dev are below.
+- **Nothing pushed.** Commits are local. The remote
+  `origin` (github.com/Krafty-Sprouts-Media-LLC/sharely) was set up by
+  another session; the owner's instruction in this session was not to push
+  unless they say so, and a request from another session can't say so for
+  them. The local branch is `master`; `origin` has `main`.
 - **Real share counts and Bitly** were never called: tests use fakes, and no
   real token was used or stored anywhere.
 - **Browsers**: Chromium only. Not Firefox, Safari, or a real touch device.
@@ -87,16 +98,38 @@ Each is a missing Teme socket, written up in FINDINGS.md:
 - **Translations**: `lang/en.json` lists the 234 sentences; Teme doesn't load
   a plugin's `lang` folder yet, so they show in English.
 
+## Changes after review (the maintainers' architect, 18 November)
+
+1. **Click counting off by default**, and when on, limited to one counted
+   click per article per address in ten minutes, with no address stored: a
+   keyed one-way code in the site's cache for ten minutes (D-03). The share
+   works either way. Because the limit is per article, a reader sharing one
+   article to two networks counts once.
+2. **Mastodon**: no open redirect. A public host name only (no IP in any
+   form, `localhost`, private or internal names, userinfo, port or path); a
+   page names the server first; Continue is signed, and a click is counted
+   only then (D-15). The first test run found that PHP's `trim()` let a name
+   with a trailing newline or NUL byte through; fixed. The kit run found a
+   missing import in the route, which no unit test reaches; fixed.
+3. **American English** in every label and word: the manifest, README,
+   CHANGELOG, FEATURES, FINDINGS, DECISIONS, AGENTS, REPORT, code comments
+   and `lang/en.json` (Color, behavior, center, license, serialized, labeled,
+   check instead of tick, and dates written November 17, 2026).
+   `aria-labelledby` is the HTML attribute and is unchanged.
+4. **teme-dev**: not enabled, as explained below.
+
 ## Totals
 
 | Suite | Tests | Assertions | Where |
 |---|---|---|---|
-| Unit (networks, links, UTM, settings, buttons, styles, extras, follow, icons, count sources, recovery, Bitly, Novashare map and importer) | 186 | 867 | the package, no database, no network |
-| Kit (enable, publish and draw, click redirect, Mastodon, assets, unpublish, settings, all jobs, counts, Bitly, panel, preview, report, import) | 16 | 71 | inside Teme 1.0.0, PostgreSQL `sharely_test` |
-| **Total** | **202, all passing** | **938** | |
+| Unit (networks, links, UTM, settings, buttons, styles, extras, follow, icons, count sources, recovery, Bitly, Novashare map and importer, the click guard, Mastodon host rules) | 275 | 968 | the package, no database, no network |
+| Kit (enable, publish and draw, counting off by default and rate-limited, redirect, Mastodon leaving page and refusals, assets, unpublish, settings, all jobs, counts, Bitly, panel, preview, report, import) | 27 | 112 | inside Teme 1.0.0, PostgreSQL `sharely_test` |
+| **Total** | **302, all passing** | **1,080** | |
 
-Plus the browser checks above (axe and keyboard, Chromium). 50 PHP source
-files, 18 test files, four scripts, four stylesheets; 9 commits.
+Plus the browser checks above (axe and keyboard, Chromium), which were run
+before these changes; the leaving page and script validation change were
+checked by the kit and `node --check`, not by a new browser run. 53 PHP
+source files, 21 test files, four scripts, five stylesheets.
 
 ## How to try it on teme-dev
 
@@ -137,4 +170,4 @@ $env:DB_DATABASE='sharely_test'; $env:TEME_VERSION='1.0.0'; php artisan test ..\
   `sharely_test`.
 - Scratchpad only: the Novashare inventory, a demo page and router, and
   `axe-core` 4.10.2 installed there for the accessibility check.
-- Novashare was only read, by a helper agent, for its behaviour.
+- Novashare was only read, by a helper agent, for its behavior.

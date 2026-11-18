@@ -43,7 +43,8 @@ it('records an article when it is published, and draws share buttons above it', 
 
     expect($page->getStatusCode())->toBe(200)
         ->and($html)->toContain('class="sharely sharely--inline')
-        ->and($html)->toContain('/sharely/go/x/'.$item->id)
+        ->and($html)->toContain('https://x.com/intent/post')
+        ->and($html)->not->toContain('/sharely/go/')
         ->and($html)->toContain('Share on X (opens in a new tab)')
         ->and($html)->toContain('data-sharely-action="copy"')
         ->and($html)->toContain('<script src="/sharely/assets/actions.js"')
@@ -61,7 +62,7 @@ it('records an article when it is published, and draws share buttons above it', 
 });
 
 it('counts a share click and sends the reader on to the network, keeping nothing about them', function (): void {
-    sharely($this)->enable();
+    sharely($this)->enable()->changeSettings(['count_clicks' => true]);
     $item = $this->publish('Pruning roses');
 
     $answer = $this->fetch('/sharely/go/x/'.$item->id);
@@ -73,6 +74,28 @@ it('counts a share click and sends the reader on to the network, keeping nothing
     $columns = Schema::getColumnListing('sharely_clicks');
     sort($columns);
     expect($columns)->toBe(['clicks', 'day', 'item_id', 'network']);
+});
+
+it('counts nothing until counting is turned on, and the share still works', function (): void {
+    sharely($this)->enable();
+    $item = $this->publish('Uncounted roses');
+
+    $answer = $this->fetch('/sharely/go/x/'.$item->id);
+
+    expect($answer->getStatusCode())->toBe(302)
+        ->and($answer->headers->get('location'))->toStartWith('https://x.com/intent/post')
+        ->and(DB::table('sharely_clicks')->count())->toBe(0);
+});
+
+it('counts one click per article per address in ten minutes, however often it is asked, and still redirects every time', function (): void {
+    sharely($this)->enable()->changeSettings(['count_clicks' => true]);
+    $item = $this->publish('Hammered roses');
+
+    foreach (range(1, 5) as $_) {
+        expect($this->fetch('/sharely/go/x/'.$item->id)->getStatusCode())->toBe(302);
+    }
+
+    expect((int) DB::table('sharely_clicks')->where('item_id', $item->id)->sum('clicks'))->toBe(1);
 });
 
 it('refuses to redirect for a network that isn’t shown, an unknown item or a draft', function (): void {
@@ -95,11 +118,56 @@ it('asks for a Mastodon server without a script, and sends the reader to the one
         ->and($form->getContent())->toContain('data-sharely-mastodon-form')
         ->and($form->getContent())->toContain('value="mastodon.social"');
 
-    $go = $this->fetch('/sharely/mastodon/'.$item->id.'?server=https://Fosstodon.org/');
+    // A typed server never redirects at once: a page names it first, and counts nothing.
+    $leaving = $this->fetch('/sharely/mastodon/'.$item->id.'?server=https://Fosstodon.org/');
+    $html = $leaving->getContent();
+    expect($leaving->getStatusCode())->toBe(200)
+        ->and($leaving->headers->get('location'))->toBeNull()
+        ->and($html)->toContain('You’re leaving for fosstodon.org to share this post')
+        ->and($html)->toContain('Continue')
+        ->and(DB::table('sharely_clicks')->count())->toBe(0);
+
+    preg_match('#href="(/sharely/mastodon/[^"]*go=[0-9a-f]{32}[^"]*)"#', $html, $m);
+    expect($m)->not->toBeEmpty();
+
+    $go = $this->fetch(html_entity_decode($m[1]));
     expect($go->getStatusCode())->toBe(302)
         ->and($go->headers->get('location'))->toStartWith('https://fosstodon.org/share?text=Roses%20on%20Mastodon%20');
+});
 
-    expect($this->fetch('/sharely/mastodon/'.$item->id.'?server=localhost')->getStatusCode())->toBe(422);
+it('counts a Mastodon share only when the reader continues, and only when counting is on', function (): void {
+    sharely($this)->enable()->changeSettings(['count_clicks' => true]);
+    $item = $this->publish('Counted on Mastodon');
+
+    $leaving = $this->fetch('/sharely/mastodon/'.$item->id.'?server=mas.to')->getContent();
+    expect(DB::table('sharely_clicks')->count())->toBe(0);
+
+    preg_match('#href="(/sharely/mastodon/[^"]*go=[0-9a-f]{32}[^"]*)"#', $leaving, $m);
+    $this->fetch(html_entity_decode($m[1]));
+
+    expect((int) DB::table('sharely_clicks')->where('item_id', $item->id)->where('network', 'mastodon')->sum('clicks'))->toBe(1);
+});
+
+it('refuses a Mastodon server that isn’t a public host name, and a continue link that was made up', function (string $server): void {
+    sharely($this)->enable();
+    $item = $this->publish('Careful roses');
+
+    $answer = $this->fetch('/sharely/mastodon/'.$item->id.'?server='.rawurlencode($server));
+
+    expect($answer->getStatusCode())->toBe(422)
+        ->and($answer->headers->get('location'))->toBeNull()
+        ->and($answer->getContent())->not->toContain('Continue');
+})->with(['localhost', '127.0.0.1', '192.168.1.1', 'mastodon.social:8443', 'user@mastodon.social', 'mastodon.social/@me', 'db.internal']);
+
+it('shows the leaving page again, never a redirect, for a continue link that was made up', function (): void {
+    sharely($this)->enable();
+    $item = $this->publish('Forged roses');
+
+    $answer = $this->fetch('/sharely/mastodon/'.$item->id.'?server=mas.to&go='.str_repeat('0', 32));
+
+    expect($answer->getStatusCode())->toBe(200)
+        ->and($answer->headers->get('location'))->toBeNull()
+        ->and($answer->getContent())->toContain('You’re leaving for mas.to to share this post');
 });
 
 it('serves its scripts from its own address', function (): void {
@@ -125,6 +193,7 @@ it('uses the saved settings for the buttons and the redirect', function (): void
     $plugin = sharely($this)->enable();
     $plugin->changeSettings([
         'networks' => [['network' => 'bluesky'], ['network' => 'facebook']],
+        'count_clicks' => true,
         'utm' => true,
         'heading' => 'Pass it on',
     ]);

@@ -19,12 +19,22 @@
   const load = () => { try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; } };
   const save = (host) => { try { localStorage.setItem(KEY, host); } catch (e) { /* storage is off */ } };
 
-  /** Returns the bare host ("mastodon.social" or "host.example:8443"), or '' when it is not one. */
+  // The same rules as Sharely's server (PublicHost): a public host name and nothing else.
+  const REFUSED = ['localhost', 'local', 'localdomain', 'internal', 'intranet', 'lan', 'home', 'corp', 'private',
+    'test', 'example', 'invalid', 'onion', 'arpa', 'nip.io', 'sslip.io', 'xip.io', 'localtest.me', 'lvh.me',
+    'traefik.me', 'localhost.run'];
+
+  /** Returns the bare lower-case host ("mastodon.social"), or '' when it is not a public host name. */
   const cleanHost = (value) => {
-    let v = String(value || '').trim().toLowerCase();
-    v = v.replace(/^[a-z][a-z0-9+.-]*:\/\//, '').replace(/\/+$/, '');
-    if (v.includes('@')) v = v.slice(v.lastIndexOf('@') + 1); // "@me@host" handles
-    return /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+(?::\d{1,5})?$/.test(v) ? v : '';
+    let v = String(value || '').replace(/^[ \t]+|[ \t]+$/g, '').toLowerCase();
+    v = v.replace(/^https?:\/\//, '');
+    if (v.endsWith('/') && !v.endsWith('//')) v = v.slice(0, -1);
+    if (!v || v.length > 253 || !/^[a-z0-9.-]+$/.test(v)) return '';
+    const labels = v.split('.');
+    if (labels.length < 2) return '';
+    if (!labels.every((l) => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(l))) return '';
+    if (!/^(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/.test(labels[labels.length - 1])) return '';
+    return REFUSED.some((r) => v === r || v.endsWith('.' + r)) ? '' : v;
   };
 
   const share = (host, text) => {

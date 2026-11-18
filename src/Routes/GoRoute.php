@@ -53,7 +53,9 @@ final class GoRoute implements PublicRoute
             return Answers::notFound();
         }
 
-        if ($config->countClicks) {
+        // Counting is off until the administrator turns it on, and a repeat from the
+        // same address within ten minutes isn't counted. The share works either way.
+        if ($config->countClicks && (new Guard(new SiteKeys))->allowClick($item->id, $request->clientAddress)) {
             (new Counts)->click($item->id, $network->id);
         }
 

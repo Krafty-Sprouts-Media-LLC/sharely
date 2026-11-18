@@ -27,11 +27,14 @@ GPL-2.0-or-later.
   the reader choose which image to pin.
 - **Mastodon done properly**: readers type their own server once; their device
   remembers it. Works without a script, and with Misskey, Sharkey, Firefish
-  and Iceshrimp too.
-- **Share counts**: Sharely counts clicks on its buttons on your own site. If
-  you turn it on, a background job also asks Facebook, Pinterest, Reddit or
-  Hacker News how often each article was shared there. Counts follow an
-  article to a new address.
+  and Iceshrimp too. Sharely only sends a reader to a public server name (never
+  an address number, `localhost`, a port or a path), and always shows a page
+  that says "You’re leaving for that server to share this post" with a
+  Continue link first.
+- **Share counts**: off until you turn them on. Counting share clicks on your
+  own site is one setting; asking Facebook, Pinterest, Reddit or Hacker News
+  how often each article was shared there, with a background job, is
+  another. Counts follow an article to a new address.
 - **A share report** under Site › Sharely: share clicks over the last 30
   days and all time, a chart of clicks a day, and which articles and networks
   are shared most.
@@ -58,8 +61,8 @@ Under Settings › Plugin settings › Sharely (or Tools › Sharely):
 |---|---|
 | Where the buttons show | Above, below, both or nowhere; Posts, Pages and other content types; the floating bar; a heading |
 | Networks | The share buttons in order; a More button after so many; a different set on phones and the width that counts as a phone |
-| How the buttons look | Shape, size, icons or icons and names, colours (network colours, your site's accent from Settings › Design, or outlined in your theme's colours), alignment |
-| Share counts | Count share clicks (on by default); show counts and the total; hide counts below a number; ask networks for their counts, which ones, and how often; a Facebook access token; your site's old address |
+| How the buttons look | Shape, size, icons or icons and names, colors (network colors, your site's accent from Settings › Design, or outlined in your theme's colors), alignment |
+| Share counts | Count share clicks (off by default); show counts and the total; hide counts below a number; ask networks for their counts, which ones, and how often; a Facebook access token; your site's old address |
 | Pinterest | Pin buttons on images, the smallest image to pin, the corner; let readers pick the image |
 | Quotes and highlights | Highlight to share and its networks; share buttons on quotes |
 | Follow buttons | Your profiles; where they show; a heading |
@@ -97,8 +100,8 @@ own, which Teme's import doesn't read yet, so they don't come across.
 - each published item's title, address, type and language, and every address
   it has had;
 - the options you set for an item in the editor;
-- for each item, network and day, how many times its share button was
-  clicked: one number, nothing else;
+- only if you turn counting on: for each item, network and day, how many
+  times its share button was clicked: one number, nothing else;
 - the counts networks report, if you turn that on;
 - a short link per item, if you connect Bitly;
 - a copy of its own settings, for its public addresses to read.
@@ -106,16 +109,23 @@ own, which Teme's import doesn't read yet, so they don't come across.
 **What Sharely never does:**
 
 - set a cookie, or keep a reader's address, browser, device or the time of a
-  click;
+  click. To count a click only once per article from one address in ten
+  minutes (so repeated requests can't inflate a count), it keeps, in your
+  site's cache for those ten minutes and nowhere else, a one-way code made
+  from the address, the article and a random number that changes every day.
+  The code can't be turned back into an address, and it is gone after ten
+  minutes;
 - load anything from another site on your pages: icons, styles and scripts
   all come from your site;
 - send anything anywhere until you turn it on. When you do: asking networks
-  for counts sends each article's address to the networks you tick;
+  for counts sends each article's address to the networks you check;
   Bitly gets each article's address once; a reader who shares goes to the
   network they chose.
 
 The reader's Mastodon server is remembered in their own browser, never sent
-to your site except as part of the one share they ask for.
+to your site except as part of the one share they ask for. Sharely only
+passes it on after checking it is a public server name and showing the reader
+where they are going.
 
 Removing Sharely's data (Plugins › Sharely › Remove data, after disabling it)
 deletes all of the above.

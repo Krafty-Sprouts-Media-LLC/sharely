@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Works out how well two colours read against each other, as WCAG measures
- * it, so a button's text is always the colour that reads best on it.
+ * Works out how well two colors read against each other, as WCAG measures
+ * it, so a button's text is always the color that reads best on it.
  *
  * @package KraftySprouts\Sharely
  * @since 1.0.0
@@ -13,15 +13,15 @@ declare(strict_types=1);
 namespace KraftySprouts\Sharely\Networks;
 
 /**
- * Works out how well two colours read against each other, as WCAG measures
- * it, so a button's text is always the colour that reads best on it.
+ * Works out how well two colors read against each other, as WCAG measures
+ * it, so a button's text is always the color that reads best on it.
  *
  * @since 1.0.0
  */
 final class Contrast
 {
     /**
-     * White or black, whichever reads better on the colour.
+     * White or black, whichever reads better on the color.
      *
      * @since 1.0.0
      */
@@ -31,7 +31,7 @@ final class Contrast
     }
 
     /**
-     * The contrast ratio of two #rrggbb colours, from 1 to 21.
+     * The contrast ratio of two #rrggbb colors, from 1 to 21.
      *
      * @since 1.0.0
      */

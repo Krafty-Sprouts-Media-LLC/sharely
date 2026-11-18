@@ -86,21 +86,28 @@ it('previews how an item looks on each network for the panel', function (): void
 });
 
 it('reports share clicks by article and network', function (): void {
-    sharelyJobs($this)->enable();
+    sharelyJobs($this)->enable()->changeSettings([
+        'count_clicks' => true,
+        'networks' => [['network' => 'x'], ['network' => 'facebook']],
+    ]);
     $item = $this->publish('Popular roses');
     $this->fetch('/sharely/go/x/'.$item->id);
+    $this->fetch('/sharely/go/facebook/'.$item->id); // the same address, the same article: counted once in ten minutes
     $this->fetch('/sharely/go/x/'.$item->id);
-    $this->fetch('/sharely/go/facebook/'.$item->id);
+
+    // Other articles still count: the limit is per article per address.
+    $other = $this->publish('Other roses');
+    $this->fetch('/sharely/go/facebook/'.$other->id);
 
     $report = new Report;
     $context = new AreaContext('someone', 'en', 'UTC', ['report']);
     $figures = $report->figures('overview', 'totals', $context);
     $rows = $report->rows('items', new TableQuery(1, 25, '', [], null, 'desc'), $context);
 
-    expect($figures['clicks-30']->value)->toBe(3)
-        ->and($figures['top-network']->value)->toBe('X')
-        ->and($rows->total)->toBe(1)
-        ->and($rows->rows[0]->cells['clicks']->value)->toBe(3)
+    expect($figures['clicks-30']->value)->toBe(2)
+        ->and($figures['top-network']->value)->toBeIn(['X', 'Facebook'])
+        ->and($rows->total)->toBe(2)
+        ->and($rows->rows[0]->cells['clicks']->value)->toBe(1)
         ->and($report->chart('overview', 'per-day', $context)->series['clicks'])->toHaveCount(30);
 });
 
