@@ -140,7 +140,13 @@ final class Extras
             $css[] = 'dialog';
         }
 
-        $html = '<style>'.Styles::css($config, $css).'</style>';
+        // The buttons' own styles go inline (they depend on the settings); the scripts'
+        // stylesheets are linked, so a browser caches them and drawing a page reads no file.
+        $html = '<style>'.Styles::css($config).'</style>';
+
+        foreach ($css as $sheet) {
+            $html .= '<link rel="stylesheet" href="'.self::ASSETS.$sheet.'.css">';
+        }
 
         if ($scripts === []) {
             return $html;

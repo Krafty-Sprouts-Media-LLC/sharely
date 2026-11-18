@@ -49,6 +49,12 @@ it('records an article when it is published, and draws share buttons above it', 
         ->and($html)->toContain('<script src="/sharely/assets/actions.js"')
         ->and($html)->toContain('<template data-sharely-icons');
 
+    $plugin = sharely($this);
+    $plugin->changeSettings(['highlight' => true]);
+    expect($this->fetch(parse_url((string) $item->url, PHP_URL_PATH))->getContent())
+        ->toContain('href="/sharely/assets/highlight.css"')
+        ->toContain('data-sharely-highlight');
+
     $policy = (string) ($page->headers->get('content-security-policy') ?? $page->headers->get('content-security-policy-report-only'));
     fwrite(STDERR, "\nCSP: ".$policy."\n");
     expect($policy === '' || preg_match("/script-src[^;]*'self'/", $policy) === 1)->toBeTrue();

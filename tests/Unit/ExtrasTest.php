@@ -77,6 +77,15 @@ it('puts the words, the icons and the script tags at the end of the page', funct
         ->not->toContain('mastodon.js');
 });
 
+it('links the scripts’ stylesheets from Sharely’s own address rather than writing them into every page', function (): void {
+    $html = Extras::foot(Config::fromSettings(['highlight' => true, 'pin_images' => true]));
+
+    expect($html)->toContain('<link rel="stylesheet" href="/sharely/assets/highlight.css">')
+        ->toContain('<link rel="stylesheet" href="/sharely/assets/pins.css">')
+        ->toContain('<link rel="stylesheet" href="/sharely/assets/dialog.css">')
+        ->not->toContain('.sharely-bar');
+});
+
 it('draws follow buttons that say where they go, with rel="me" for profile checks', function (): void {
     $config = Config::fromSettings(['follow' => [
         ['network' => 'mastodon', 'address' => 'https://mastodon.social/@site'],

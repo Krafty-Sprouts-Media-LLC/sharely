@@ -220,6 +220,20 @@ select, multiselect, email, color or code.
 **Instead:** a text field, checked when drawn: only `http(s)` addresses and
 email addresses become links.
 
+### W-17 The 100 ms budget on a cold, busy machine
+
+Twice, in kit runs on a heavily loaded machine, Sharely's page insertions
+took 154 ms and 101 ms and Teme skipped them for that page ("over the 100 ms
+budget"): the buttons drew (article insertions) but not the stylesheet and
+scripts. Measured, almost all of it was the first read of three stylesheet
+files from disk, which Sharely then wrote into the page. Fixed: the scripts'
+stylesheets are now linked from `/sharely/assets/` (cached by browsers) and
+drawing a page reads no file; the cold time of that piece fell from about
+100 ms to 3 ms, and each page is 6 KB lighter. What remains cold is PHP's
+first load of Sharely's classes (about 15 ms here). **Ask:** say in the
+handbook that the budget includes the first request's class loading, so
+authors keep file reads out of insertions.
+
 ## The handbook
 
 ### H-01 Area blocks: the keys aren't named
