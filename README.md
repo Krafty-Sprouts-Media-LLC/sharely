@@ -53,6 +53,27 @@ VK, Hacker News, email, text message, print, copy link, and the device's own
 share menu. Follow buttons can also link to your site's feed. Pocket is not
 offered: it closed in July 2025.
 
+## Install
+
+Sharely needs Teme 1.3.1 or later. Open **Plugins › Add plugin**, then either:
+
+- **From Teme's directory**: choose the **Directory** tab, find Sharely and
+  install it.
+- **From a zip**: download `sharely-<version>.zip` from the
+  [latest release](https://github.com/Krafty-Sprouts-Media-LLC/sharely/releases/latest),
+  choose the **Upload ZIP** tab, pick the file and confirm with your
+  password. You need the permission to install plugins, and your site's
+  installer service has to be running (it unpacks the zip and installs it).
+  Each release also has a `.sha256` file; to check your download, run
+  `sha256sum -c sharely-<version>.zip.sha256` (or `Get-FileHash` in
+  PowerShell and compare).
+
+Then enable Sharely under **Plugins** and agree to what it asks for. Sharely
+asks to read content, place buttons in articles and on pages, run background
+jobs, reach the networks you turn on, answer a few addresses of its own, and
+read a WordPress import. Making your own zip from this repository takes one
+command: see [RELEASING.md](RELEASING.md).
+
 ## Settings
 
 Under Settings › Plugin settings › Sharely (or Tools › Sharely):

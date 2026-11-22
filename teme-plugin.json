@@ -11,6 +11,12 @@
     "plugin": "KraftySprouts\\Sharely\\Sharely",
     "author": "Krafty Sprouts Media, LLC",
     "license": "GPL-2.0-or-later",
+    "icon": "art/icon.png",
+    "screenshots": [
+        { "path": "art/article.png", "caption": "Share buttons above an article with counts, a floating bar at the side, and quote and follow buttons." },
+        { "path": "art/phone.png", "caption": "A separate set of buttons for phones, including the device's own share menu." },
+        { "path": "art/looks.png", "caption": "Four looks: network colors, your site's accent, outlined in your theme's colors, and icons only." }
+    ],
     "capabilities": ["content.read", "content.insert", "pages.insert", "jobs", "http", "routes.public", "import.wordpress"],
     "hosts": ["graph.facebook.com", "widgets.pinterest.com", "www.reddit.com", "hn.algolia.com", "api-ssl.bitly.com"],
     "hooks": ["ContentPublished", "ContentUnpublished", "ContentTrashed", "ContentDeleted", "SettingsChanged"],
