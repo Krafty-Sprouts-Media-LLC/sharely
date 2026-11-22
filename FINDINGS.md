@@ -285,3 +285,35 @@ need.
   explicitly, that `repeater` is refused.
 - `ContentPublished` carries `actorId`, but the handbook doesn't say whether
   a listener may read the draft with it on a scheduled publish (W-14).
+
+### H-07 Uploading a ZIP isn't documented anywhere
+
+Teme 1.3 has an **Upload ZIP** tab on Plugins › Add plugin, but neither the
+developer handbook nor the operators' guide ("Plugins and themes installed
+from the admin") mentions it. Sharely's zip rules were read from the code
+(`UploadExtension` and `ArchiveReader`): `composer.json` at the root or inside
+one top-level folder, with the package's `name`, `type` and, unlike a Composer
+package from a tag, a **`version`**; `teme-plugin.json` beside it; no path that
+leaves the folder, no symbolic link, no repeated name; 32 MB to upload
+(`TEME_EXTENSION_UPLOAD_MAX`), 20,000 files, 256 MB unpacked; nothing is run.
+`tools/ArchiveCheck.php` encodes them. **Ask:** a handbook page for authors who
+ship a zip, and a line in the operators' guide.
+
+### H-08 Why `requires.teme` has to be `^1.3.1`
+
+The publishing page's example says `"^1.3.1"` without saying why. The reason is
+in the changelog: before 1.3.1 Teme recorded its own contracts as `dev-main`,
+so Composer refused any plugin that required `teme/contracts` 1.x. The
+directory installs each release on the newest Teme of every minor series it
+claims, so a plugin claiming `^1.0` fails the install check on 1.0 to 1.3.0.
+Sharely's manifest said `^1.0` until this was found (its `icon` and
+`screenshots` keys are `@since 1.3.0` too). **Ask:** say in the publishing page
+that a plugin requiring `teme/contracts` can claim no Teme older than 1.3.1.
+
+### H-09 The checks a release meets aren't all in the handbook
+
+`temecms/directory` runs the real checks, and its `PackageInspector` can be
+run locally on an archive. The handbook describes them in a paragraph. Sharely
+runs that inspector in `tools/directory-check.php` so a release is checked
+before it is tagged. **Ask:** a documented way to run the directory's checks
+locally, such as `php bin/directory inspect <archive>`.

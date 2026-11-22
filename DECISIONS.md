@@ -180,3 +180,55 @@ host. After review:
 - **The script's dialog** sends the reader from their own browser to the
   server they typed, with the same checks; that is not a redirect from the
   site.
+
+## D-16 The next version is 1.1.0, and `@since` is never rewritten
+
+The code was first pushed on November 18 as 1.0.0, in one push, with no tag.
+Work added after that was first stamped `@since 1.0.0` as well, which is
+wrong: a version that has been pushed is not added to. Everything added after
+the push carries the version it ships in, 1.1.0 (the packager, its tests and
+tools, the workflows), and `tools/add-file-headers.php` no longer rewrites a
+header that is there, so a tag can't be re-stamped by running it again. No
+`v1.0.0` tag is made: it would point at a commit that needs a local Teme
+checkout to install, and a directory that installs it would hold or fail it.
+The first release is 1.1.0.
+
+## D-17 Two ways onto a site, and why the zip isn't the tag's archive
+
+The directory installs from a tag with Composer, so the tag's own
+`composer.json` has no `version` and the archive holds the whole repository.
+Teme's **Upload ZIP** reads a `version` from the zip's `composer.json`, and
+refuses a `vendor` folder. So the zip is built separately
+(`tools/Packager.php`): one folder, only what a site runs, a trimmed
+`composer.json` with the version added, a fixed order, time and mode so the
+checksum is reproducible. `ArchiveCheck` applies Teme's own upload and unpack
+rules to it before it is kept, and the release workflow publishes it with its
+SHA-256. `.gitattributes` leaves the repository's plumbing out of the tag's
+archive.
+
+## D-18 `requires.teme` is `^1.3.1`; `teme/contracts` comes from Packagist
+
+The directory installs a release on every minor series it claims, and before
+1.3.1 Teme couldn't install a plugin that requires `teme/contracts`
+(FINDINGS H-08). `teme/contracts` is on Packagist (1.3.2), so the path to a
+local Teme checkout is gone and a fresh clone installs and runs its unit tests
+anywhere, which the directory's "own tests" check and CI rely on. Sharely uses
+only contracts from 1.0.0; the unit tests pass against 1.3.2, and the kit
+tests run inside Teme 1.3.2.
+
+## D-19 Workflows pin every action to a commit
+
+Both workflows pin each action to a full commit SHA (the ones the directory
+itself uses), read the repository with `persist-credentials: false`, and only
+the release job holds `contents: write`. A workflow that can publish a
+release is a supply-chain target; a moving tag such as `@v4` is not a
+version. The kit tests aren't in CI: they need a Teme checkout and
+PostgreSQL.
+
+## D-20 The listing's pictures are drawn by Sharely, on a stand-in page
+
+The screenshots (`art/`) are Sharely's own renderer drawing an article on a
+plain demo page, captured in a headless browser, with the phone view in a
+390-pixel frame (headless Edge won't go narrower than 500). They show what
+Sharely draws on a page; they are not Teme's admin screens, and the demo
+theme is not a real Teme theme.
