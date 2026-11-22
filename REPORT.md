@@ -1,12 +1,12 @@
 # Report: Sharely 1.0.0
 
-Built November 17, 2026 in `C:\Users\kings\Downloads\Projects\teme-plugins\sharely`
-(git, not pushed), against Teme `main` at 4fbb9d48, contracts 1.0.0.
+A build report: what works, what doesn't yet and why, how it was tested, and
+how to try it. Built against Teme `main` at 4fbb9d48 (contracts 1.0.0).
 
 ## What works
 
-Tested inside a real Teme (PostgreSQL, `sharely_test`) through Teme's
-testing kit, and in a browser on a page drawn by Sharely's own code:
+Tested inside a real Teme (PostgreSQL) through Teme's testing kit, and in a
+browser on a page drawn by Sharely's own code:
 
 - **Enabling**: Teme's checks at enable all pass: manifest, settings,
   sections, repeaters, jobs, schedules, routes, permissions, the area, the
@@ -63,8 +63,8 @@ Each is a missing Teme socket, written up in FINDINGS.md:
 - **Per-image** pin options (W-04).
 - A **phone-only bottom bar** with a desktop rail (W-05).
 - **Counts on cached pages** update when the page is next purged (W-07).
-- A **theme stepping aside** for Sharely (W-08): turn the theme's buttons
-  off by hand; README says how for Fable.
+- A **theme stepping aside** for Sharely (W-08): turn the theme's own share
+  buttons off by hand; the README says how for the Fable look.
 - Follow buttons **inside** a region (W-09).
 - Novashare's **per-post data and counts**, its button order, follow
   profiles and tokens can't be imported (W-10); they're listed to set by
@@ -73,32 +73,19 @@ Each is a missing Teme socket, written up in FINDINGS.md:
 
 ## Not done or not checked
 
-- **Not enabled on the teme-dev site, and why.** The first attempt, from the
-  console, was refused by this session's permission check, because it
-  changes the shared development database. When asked to try again, I
-  didn't: the owner had said in this session that they would enable it
-  themselves, and a request from another session can't change that. So
-  nothing in teme-dev's database was touched; every behavior was tested
-  through the kit (which enables it in its own database) and in a browser on
-  a page Sharely's renderer drew. Steps to try it on teme-dev are below.
-- **Nothing pushed.** Commits are local. The remote
-  `origin` (github.com/Krafty-Sprouts-Media-LLC/sharely) was set up by
-  another session; the owner's instruction in this session was not to push
-  unless they say so, and a request from another session can't say so for
-  them. The local branch is `master`; `origin` has `main`.
 - **Real share counts and Bitly** were never called: tests use fakes, and no
   real token was used or stored anywhere.
 - **Browsers**: Chromium only. Not Firefox, Safari, or a real touch device.
 - **Test-first exceptions**: the button renderer's tests were written before
   the code but first run after it; everything else was seen failing first.
-- **The 100 ms budget** (W-17): twice, on this loaded machine, the page's
+- **The 100 ms budget** (W-17): twice, on a loaded machine, the page's
   stylesheet and scripts were skipped for going over. Measured and fixed
   (stylesheets linked, not read from disk while a page draws): cold time of
   that piece from about 100 ms to 3 ms.
-- **Translations**: `lang/en.json` lists the 234 sentences; Teme doesn't load
-  a plugin's `lang` folder yet, so they show in English.
+- **Translations**: `lang/en.json` lists the sentences; Teme doesn't load a
+  plugin's `lang` folder yet, so they show in English.
 
-## Changes after review (the maintainers' architect, 18 November)
+## Changes after review
 
 1. **Click counting off by default**, and when on, limited to one counted
    click per article per address in ten minutes, with no address stored: a
@@ -113,61 +100,57 @@ Each is a missing Teme socket, written up in FINDINGS.md:
    missing import in the route, which no unit test reaches; fixed.
 3. **American English** in every label and word: the manifest, README,
    CHANGELOG, FEATURES, FINDINGS, DECISIONS, AGENTS, REPORT, code comments
-   and `lang/en.json` (Color, behavior, center, license, serialized, labeled,
-   check instead of tick, and dates written November 17, 2026).
-   `aria-labelledby` is the HTML attribute and is unchanged.
-4. **teme-dev**: not enabled, as explained below.
+   and `lang/en.json`. `aria-labelledby` is the HTML attribute and is
+   unchanged.
 
 ## Totals
 
 | Suite | Tests | Assertions | Where |
 |---|---|---|---|
 | Unit (networks, links, UTM, settings, buttons, styles, extras, follow, icons, count sources, recovery, Bitly, Novashare map and importer, the click guard, Mastodon host rules) | 275 | 968 | the package, no database, no network |
-| Kit (enable, publish and draw, counting off by default and rate-limited, redirect, Mastodon leaving page and refusals, assets, unpublish, settings, all jobs, counts, Bitly, panel, preview, report, import) | 27 | 112 | inside Teme 1.0.0, PostgreSQL `sharely_test` |
+| Kit (enable, publish and draw, counting off by default and rate-limited, redirect, Mastodon leaving page and refusals, assets, unpublish, settings, all jobs, counts, Bitly, panel, preview, report, import) | 27 | 112 | inside Teme 1.0.0, PostgreSQL |
 | **Total** | **302, all passing** | **1,080** | |
 
-Plus the browser checks above (axe and keyboard, Chromium), which were run
-before these changes; the leaving page and script validation change were
-checked by the kit and `node --check`, not by a new browser run. 53 PHP
-source files, 21 test files, four scripts, five stylesheets.
+The browser checks (axe and keyboard, Chromium) were run before the
+changes in "Changes after review"; the leaving page and the script's
+validation were checked by the kit and `node --check`, not by a new browser
+run. 53 PHP source files, 21 test files, four scripts, five stylesheets.
 
-## How to try it on teme-dev
+## How to try it
 
-Sharely is already in `TEME_PLUGIN_PATHS` in teme-dev's `.env` (the last
-entry). teme-dev's `.env` pins `TEME_VERSION=0.8.0-alpha.1`, which Sharely
-(`^1.0`) refuses, and Writura needs `^0.8`, so set the version for your own
-session only:
+Sharely needs a Teme development site that can load plugins from a folder
+(see "Set up a development site" in Teme's developer handbook) and Teme 1.0 or
+later. If the site's `TEME_VERSION` is set to an older release, Sharely
+(`^1.0`) is refused, so set it for your own session only.
 
-1. Start the database: `docker compose -f ..\adplacr\dev\docker-compose.yml -p adplacr-dev up -d`
-2. In PowerShell, in teme-dev:
+1. Add Sharely's folder to `TEME_PLUGIN_PATHS` in the site's `.env`, as an
+   absolute path.
+2. Enable it as an administrator:
    ```powershell
    $env:TEME_VERSION = '1.0.0'
-   php artisan teme:plugins:enable krafty-sprouts/sharely --agree --as=admin@example.test
+   php artisan teme:plugins:enable krafty-sprouts/sharely --agree --as=you@example.com
    ```
-3. Serve the site in the same window (so it keeps the version):
-   ```powershell
-   cd public; php -S 127.0.0.1:8099 ..\vendor\laravel\framework\src\Illuminate\Foundation\resources\server.php
-   ```
-4. Sign in, open Tools › Sharely, choose networks and looks, and save. Press
-   "Bring the article list up to date", then open a published post.
-5. Try Site › Sharely for the report, and the Sharing tool in the editor.
+3. Serve the site in the same window, sign in, open Tools › Sharely, choose
+   networks and looks, and save. Press "Bring the article list up to date",
+   then open a published post. Site › Sharely shows the report; the editor
+   has a Sharing tool.
 
 Run the tests:
 
 ```powershell
-cd C:\Users\kings\Downloads\Projects\teme-plugins\sharely
+composer install
 vendor\bin\pest
-cd ..\teme-dev
-$env:DB_DATABASE='sharely_test'; $env:TEME_VERSION='1.0.0'; php artisan test ..\sharely\tests\Kit
 ```
 
-## Outside this folder
+The kit tests run inside the Teme checkout, on PostgreSQL, in a database of
+their own:
 
-- teme-dev: `git pull` (to 4fbb9d48), `composer install`, `npm ci`,
-  `npm run build`, `php artisan migrate`; Sharely's folder added to
-  `TEME_PLUGIN_PATHS` in `.env` (not tracked). No Teme code changed.
-- Docker: started the existing `adplacr-dev` stack; created the database
-  `sharely_test`.
-- Scratchpad only: the Novashare inventory, a demo page and router, and
-  `axe-core` 4.10.2 installed there for the accessibility check.
-- Novashare was only read, by a helper agent, for its behavior.
+```powershell
+cd path\to\teme
+$env:DB_DATABASE='sharely_test'; $env:TEME_VERSION='1.0.0'
+php artisan test path\to\sharely\tests\Kit
+```
+
+`composer.json` points `teme/contracts` at a Teme checkout beside this one
+(`../teme-dev/packages/teme-contracts`), because it can't be installed from
+Packagist yet; change that path to where your checkout is.

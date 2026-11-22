@@ -4,14 +4,14 @@ Each decision made while building Sharely alone, and why.
 
 ## D-01 File headers and `@since` on everything
 
-The brief said "no file headers" and `@since` only on what Sharely publishes,
-as Teme's handbook recommends. The owner then asked, during the build, for
-"proper file headers/comments and @since tags", as their other Teme plugins
-(Writura, Securetor) have. The later instruction wins: every PHP file starts
+The original plan said no file headers and `@since` only on what Sharely
+publishes, as Teme's handbook recommends. During the build the project asked
+for proper file headers, comments and `@since` tags, as its other Teme
+plugins have. The later decision wins: every PHP file starts
 with a header docblock (its purpose in one sentence, `@package
 KraftySprouts\Sharely`, `@since 1.0.0`), and every class, method and constant
 carries `@since 1.0.0`. `tools/add-file-headers.php` and `tools/add-since.php`
-(from Writura) keep them complete. Teme neither reads nor checks `@since` in a
+keep them complete. Teme neither reads nor checks `@since` in a
 plugin's code (handbook, Hooks), so nothing else changes.
 
 ## D-02 Settings defaults live only in the manifest
@@ -32,7 +32,7 @@ unreliable) and are not counted. The links carry `rel="nofollow"` and the
 route answers `X-Robots-Tag: noindex`, so crawlers neither follow nor list
 them.
 
-**Changed after review (the maintainers' architect):**
+**Changed after review:**
 
 - **Off by default.** Counting is a setting the administrator turns on; with
   it off the buttons link straight to the networks, and the redirect still
@@ -78,9 +78,9 @@ publishing counts, Sharely's own clicks are the honest number left.
 ## D-06 Pocket left out
 
 Pocket closed on July 8, 2025, so a Pocket button would lead nowhere. The
-brief lists it; Sharely leaves it out of the networks and the importer drops
-it with a note. Mix, Xing and Yummly (Novashare networks the brief didn't
-ask for) are left out too.
+original list of networks included it; Sharely leaves it out of the
+networks and the importer drops it with a note. Mix, Xing and Yummly
+(Novashare networks that weren't on that list) are left out too.
 
 ## D-07 No phone-only floating bar
 
@@ -107,7 +107,7 @@ its own clicks, and one per network would multiply the calls to the service.
 
 ## D-10 Scripts from Sharely's own route, not approved inline scripts
 
-The brief suggested hashes allowed through core's approved scripts. Public
+The original plan suggested hashes allowed through core's approved scripts. Public
 pages' policy has `script-src 'self'` (checked in a kit test), so Sharely
 serves its four scripts from `/sharely/assets/` and adds a `<script src>`
 only on pages that use each. No person has to approve anything, the
@@ -131,17 +131,19 @@ items it may send people to, so it can't be used as an open redirect.
 
 ## D-13 Tested against Teme 1.0.0 with the version set per run
 
-teme-dev's `.env` pins Teme 0.8.0-alpha.1 for older plugins there, and
-Sharely requires `^1.0` as the brief asks. Kit runs set `TEME_VERSION=1.0.0`
-for that process only; `.env` is unchanged (FINDINGS H-02).
+A Teme development checkout may pin an older `TEME_VERSION` in its `.env`
+for other plugins, and Sharely requires `^1.0`. Kit runs set
+`TEME_VERSION=1.0.0` for that process only and leave `.env` unchanged
+(FINDINGS H-02).
 
-## D-14 Parts written by helper agents, checked here
+## D-14 Parts developed separately, reviewed before use
 
 The icons, the four scripts, the count and Bitly clients, and the Novashare
-importer were written by helper agents working to written briefs, in
-separate files, each test first; every one was read, run and wired in here.
-One finding of an automated security review (the Facebook token in the
-request address) was fixed, test first, before anything used it.
+importer were developed separately from the core, to written briefs, in
+their own files, each test first; every one was read, run and wired in
+before it was used. One finding of an automated security review (the
+Facebook token in the request address) was fixed, test first, before
+anything used it.
 
 ## D-15 Mastodon: a named, signed leaving page, never an open redirect
 

@@ -130,6 +130,13 @@ where they are going.
 Removing Sharely's data (Plugins › Sharely › Remove data, after disabling it)
 deletes all of the above.
 
+## License
+
+Copyright © 2026 Krafty Sprouts Media, LLC. Sharely is free software, released
+under the GNU General Public License, version 2 or (at your option) any later
+version: see [LICENSE](LICENSE). It was written fresh. It takes nothing from
+Novashare or any other plugin: no code, markup, styles, icons or wording.
+
 ## Accessibility
 
 Every button is named for screen readers ("Share on Bluesky (opens in a new

@@ -11,7 +11,7 @@ socket, with its FINDINGS number).
 
 | Novashare | Sharely |
 |---|---|
-| 27 share networks and utilities (X, Facebook, LinkedIn, Bluesky, Threads, Mastodon, WhatsApp, Telegram, Reddit, Pinterest, Flipboard, Tumblr, Buffer, LINE, Messenger, VK, Hacker News, Email, SMS, Print, Copy, Pocket, Mix, Xing, Yummly, Subscribe, Share window) | **Different.** The 22 the brief names, plus the device's own share sheet. Pocket left out: it closed in July 2025 (D-06). Mix, Xing, Yummly and Subscribe left out (not asked for; Subscribe is a follow link in Sharely). |
+| 27 share networks and utilities (X, Facebook, LinkedIn, Bluesky, Threads, Mastodon, WhatsApp, Telegram, Reddit, Pinterest, Flipboard, Tumblr, Buffer, LINE, Messenger, VK, Hacker News, Email, SMS, Print, Copy, Pocket, Mix, Xing, Yummly, Subscribe, Share window) | **Different.** The 22 on the original list, plus the device's own share sheet. Pocket left out: it closed in July 2025 (D-06). Mix, Xing, Yummly and Subscribe left out (not asked for; Subscribe is a follow link in Sharely). |
 | Each network on or off, in a chosen order | **Same**, as a reorderable list (Teme's repeater, Move up and Move down). |
 | Icons from Font Awesome | **Better.** Drawn fresh for Sharely as small inline SVGs; no icon font, nothing loaded from elsewhere. |
 | Brand colors | **Better.** Each button's text color is worked out for contrast (WCAG), so WhatsApp's green gets dark text. |

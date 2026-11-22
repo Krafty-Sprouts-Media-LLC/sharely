@@ -25,7 +25,7 @@ function item(array $over = []): SharedItem
     ], $over));
 }
 
-it('knows every network the brief names, in a stable order', function (): void {
+it('knows every network on the original list, in a stable order', function (): void {
     $ids = array_keys(Networks::all());
 
     expect($ids)->toContain(
