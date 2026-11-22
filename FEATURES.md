@@ -1,4 +1,4 @@
-# Features: Novashare 1.5.6 and Sharely 1.0.0
+# Features: Novashare 1.5.6 and Sharely 1.1.0
 
 Every feature of the WordPress plugin Novashare (read for its behavior only;
 no code, markup, CSS, icons or wording were taken), and what Sharely does.

@@ -3,7 +3,7 @@
 Share buttons for TemeCMS that fit your theme, work without JavaScript, and
 count shares without watching your readers.
 
-By Krafty Sprouts Media, LLC · version 1.0.0 · needs Teme 1.0 or later ·
+By Krafty Sprouts Media, LLC · version 1.1.0 · needs Teme 1.3.1 or later ·
 GPL-2.0-or-later.
 
 ## What it does

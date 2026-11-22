@@ -1,7 +1,10 @@
-# Report: Sharely 1.0.0
+# Report: Sharely 1.1.0
 
 A build report: what works, what doesn't yet and why, how it was tested, and
-how to try it. Built against Teme `main` at 4fbb9d48 (contracts 1.0.0).
+how to try it. The 1.0.0 sections below were written against Teme `main` at
+4fbb9d48 (contracts 1.0.0); the last section covers 1.1.0, which needs Teme
+1.3.1 or later and was last tested on Teme 1.3.2. Where the 1.0.0 sections say
+"Teme 1.0", read the 1.1.0 section: it replaces them.
 
 ## What works
 
@@ -107,9 +110,9 @@ Each is a missing Teme socket, written up in FINDINGS.md:
 
 | Suite | Tests | Assertions | Where |
 |---|---|---|---|
-| Unit (networks, links, UTM, settings, buttons, styles, extras, follow, icons, count sources, recovery, Bitly, Novashare map and importer, the click guard, Mastodon host rules) | 275 | 968 | the package, no database, no network |
-| Kit (enable, publish and draw, counting off by default and rate-limited, redirect, Mastodon leaving page and refusals, assets, unpublish, settings, all jobs, counts, Bitly, panel, preview, report, import) | 27 | 112 | inside Teme 1.0.0, PostgreSQL |
-| **Total** | **302, all passing** | **1,080** | |
+| Unit (networks, links, UTM, settings, buttons, styles, extras, follow, icons, count sources, recovery, Bitly, Novashare map and importer, the click guard, Mastodon host rules; from 1.1.0 also the packager and its checks) | 275 at 1.0.0, 300 at 1.1.0 | 968 at 1.0.0, 1,238 at 1.1.0 | the package, no database, no network |
+| Kit (enable, publish and draw, counting off by default and rate-limited, redirect, Mastodon leaving page and refusals, assets, unpublish, settings, all jobs, counts, Bitly, panel, preview, report, import) | 27 | 112 | inside Teme 1.0.0 at 1.0.0, Teme 1.3.2 at 1.1.0, PostgreSQL |
+| **Total at 1.1.0** | **327, all passing** | **1,350** | |
 
 The browser checks (axe and keyboard, Chromium) were run before the
 changes in "Changes after review"; the leaving page and the script's
@@ -119,15 +122,15 @@ run. 53 PHP source files, 21 test files, four scripts, five stylesheets.
 ## How to try it
 
 Sharely needs a Teme development site that can load plugins from a folder
-(see "Set up a development site" in Teme's developer handbook) and Teme 1.0 or
-later. If the site's `TEME_VERSION` is set to an older release, Sharely
-(`^1.0`) is refused, so set it for your own session only.
+(see "Set up a development site" in Teme's developer handbook) and Teme 1.3.1
+or later. If the site's `.env` pins an older `TEME_VERSION`, Sharely
+(`^1.3.1`) is refused. Or skip the development site: upload the release's zip
+from Plugins › Add plugin (see README, Install).
 
 1. Add Sharely's folder to `TEME_PLUGIN_PATHS` in the site's `.env`, as an
    absolute path.
 2. Enable it as an administrator:
    ```powershell
-   $env:TEME_VERSION = '1.0.0'
    php artisan teme:plugins:enable krafty-sprouts/sharely --agree --as=you@example.com
    ```
 3. Serve the site in the same window, sign in, open Tools › Sharely, choose
@@ -147,13 +150,12 @@ their own:
 
 ```powershell
 cd path\to\teme
-$env:DB_DATABASE='sharely_test'; $env:TEME_VERSION='1.0.0'
+$env:DB_DATABASE='sharely_test'
 php artisan test path\to\sharely\tests\Kit
 ```
 
-`composer.json` points `teme/contracts` at a Teme checkout beside this one
-(`../teme-dev/packages/teme-contracts`), because it can't be installed from
-Packagist yet; change that path to where your checkout is.
+`teme/contracts` comes from Packagist (`^1.3`), so `composer install` needs no
+Teme checkout beside this folder.
 
 ## 1.1.0: the zip, the release workflow and the directory
 
@@ -185,16 +187,24 @@ DECISIONS D-16 to D-20 and FINDINGS H-07 to H-09.
 | The directory's listing validator | valid |
 | Teme 1.3.2's own `ArchiveReader` (the installer's unpacker) on the zip | unpacks 72 files; a second unpack accepted |
 | The workflow files | parse; no unpinned action |
+| CI on GitHub, after the push to `main` (November 22, 2026) | passed |
+| Release on GitHub, after the tag `v1.1.0` | passed; the release holds `sharely-1.1.0.zip` and `sharely-1.1.0.zip.sha256` |
+
+**Released and submitted**
+
+- `v1.1.0` is tagged and released on GitHub.
+- The listing's pull request is open: `temecms/directory` pull request 7. Its
+  checks and review had not been seen when this was written.
 
 **Not checked**
 
 - The **Upload ZIP** tab in a running admin, and the installer service
   carrying it out: the rules and Teme's own unpacker were run on the zip, but
   not the whole path through a site.
-- **The workflows on GitHub.** They have never run; they are written and parsed
-  but untested until the first push to `main` and the first tag.
-- **The directory's install on a fresh Teme** and its review: that happens
-  when the listing's pull request is opened. No pull request has been opened.
+- **The released zip's bytes against a local build.** Both workflows passed,
+  but the downloaded zip's checksum hasn't been compared with a local build's.
+- **The directory's install on a fresh Teme** and its review: they run on the
+  open pull request, and their result hasn't been read.
 - The kit tests aren't in CI (they need a Teme checkout and PostgreSQL).
 - Teme 1.0.x to 1.3.0 are no longer supported by the manifest.
 - The screenshots are Sharely's own renderer on a stand-in page, not Teme's

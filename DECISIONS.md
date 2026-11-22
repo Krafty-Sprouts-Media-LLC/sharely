@@ -136,6 +136,10 @@ for other plugins, and Sharely requires `^1.0`. Kit runs set
 `TEME_VERSION=1.0.0` for that process only and leave `.env` unchanged
 (FINDINGS H-02).
 
+**Superseded in 1.1.0 by D-18:** Sharely now requires Teme `^1.3.1`, and the
+kit tests were last run on Teme 1.3.2, where no `TEME_VERSION` override is
+needed.
+
 ## D-14 Parts developed separately, reviewed before use
 
 The icons, the four scripts, the count and Bitly clients, and the Novashare
