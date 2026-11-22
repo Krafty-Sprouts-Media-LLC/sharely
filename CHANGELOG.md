@@ -18,6 +18,13 @@ Ready for Teme's directory, and for a site to upload as a zip.
   that the tag, `teme-plugin.json` and this changelog agree, and publishes a
   release with the zip, its checksum and these notes.
 - A test workflow that runs the unit tests and builds the zip on every push.
+  Both workflows pin every action to a commit.
+- An icon and three screenshots (`art/`), named in the manifest for Teme's
+  directory and the Plugins screen.
+- Install steps in the README, and `RELEASING.md`: how a version becomes a
+  zip, a GitHub release and a listing in Teme's directory.
+- `tools/directory-check.php`, which runs the directory's own inspection on
+  what a tag will be, before the tag is pushed.
 
 ### Changed
 

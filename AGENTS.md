@@ -26,13 +26,17 @@ composer install
 vendor\bin\pest                      # unit tests, no database, no network
 ```
 
-The kit tests run inside the teme-dev checkout, on PostgreSQL, in a database
-of their own:
+The kit tests run inside a Teme checkout of 1.3.1 or later (the manifest needs
+it), on PostgreSQL, in a database of their own. A checkout whose `.env` pins an
+older `TEME_VERSION` will refuse the plugin; unset it for the run:
 
 ```powershell
-cd ..\teme-dev
-$env:DB_DATABASE='sharely_test'; php artisan test ..\sharely\tests\Kit
+cd path\to\teme
+$env:DB_DATABASE='sharely_test'
+php artisan test path\to\sharely\tests\Kit
 ```
+
+They were last run on Teme 1.3.2. To build the zip, see `RELEASING.md`.
 
 Write the failing test first, watch it fail for the right reason, then write
 the code. Tests never reach the network: unit tests use the fakes in
@@ -91,6 +95,10 @@ src/Import/           Novashare's settings from a WordPress import
 src/Admin/            the share report and the editor panel
 resources/js/         the few scripts, plain ES2020, no dependencies
 database/migrations/  Sharely's tables
+art/                  the icon and screenshots the manifest names
+tools/                the zip packager, its checks, the directory pre-flight, header tools
+.github/workflows/    CI (tests, zip) and Release (tag to GitHub release)
+RELEASING.md          versions, the zip, tagging, and listing in Teme's directory
 ```
 
 Start with Teme's handbook: `docs/guides/developers/README.md` in teme-dev,

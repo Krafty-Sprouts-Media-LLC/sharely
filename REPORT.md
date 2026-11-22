@@ -154,3 +154,59 @@ php artisan test path\to\sharely\tests\Kit
 `composer.json` points `teme/contracts` at a Teme checkout beside this one
 (`../teme-dev/packages/teme-contracts`), because it can't be installed from
 Packagist yet; change that path to where your checkout is.
+
+## 1.1.0: the zip, the release workflow and the directory
+
+What was built, and how far it was checked. Details in RELEASING.md,
+DECISIONS D-16 to D-20 and FINDINGS H-07 to H-09.
+
+**Built**
+
+- A packager (`composer package`) that makes `sharely-1.1.0.zip` (about 0.4
+  MB) and its SHA-256, the same bytes every time, after checking the zip against
+  Teme's upload and unpack rules.
+- Two GitHub workflows, with every action pinned to a commit: CI (unit tests,
+  scripts parse, zip builds) and Release (a version tag becomes a GitHub release
+  with the zip, its checksum and the changelog's notes, after the tag, the
+  manifest and the changelog are checked to agree).
+- An icon and three screenshots, named in the manifest; install steps in the
+  README; `RELEASING.md`; `tools/directory-check.php`.
+- The manifest now needs Teme 1.3.1 or later, and `teme/contracts` comes from
+  Packagist (`^1.3`).
+
+**Checked**
+
+| Check | Result |
+|---|---|
+| Unit tests (including 25 for the packager), from a fresh clone with only Packagist | 300 pass, 1,238 assertions |
+| Kit tests inside Teme 1.3.2 on PostgreSQL | 27 pass, 112 assertions |
+| Enabling on Teme 1.3.2 (manifest, `^1.3.1`, icon, screenshots, code scan) | passes |
+| The directory's own release inspection, on a GitHub-style archive of the commit | all 11 checks pass |
+| The directory's listing validator | valid |
+| Teme 1.3.2's own `ArchiveReader` (the installer's unpacker) on the zip | unpacks 72 files; a second unpack accepted |
+| The workflow files | parse; no unpinned action |
+
+**Not checked**
+
+- The **Upload ZIP** tab in a running admin, and the installer service
+  carrying it out: the rules and Teme's own unpacker were run on the zip, but
+  not the whole path through a site.
+- **The workflows on GitHub.** They have never run; they are written and parsed
+  but untested until the first push to `main` and the first tag.
+- **The directory's install on a fresh Teme** and its review: that happens
+  when the listing's pull request is opened. No pull request has been opened.
+- The kit tests aren't in CI (they need a Teme checkout and PostgreSQL).
+- Teme 1.0.x to 1.3.0 are no longer supported by the manifest.
+- The screenshots are Sharely's own renderer on a stand-in page, not Teme's
+  admin screens.
+
+**Tooling gotchas met on the way** (this machine, not Sharely): Teme's
+`optimize-autoloader` made `composer install` and `dump-autoload` never
+finish here, so the scratch Teme was set up without it; and Herd's installer
+replacing its files for several minutes made PHP unusable until it finished.
+
+**Outside this folder:** a scratch checkout of Teme 1.3.2 in
+`teme-plugins/teme-latest` (own `.env`, database `sharely_latest`, optimized
+autoload switched off there), used only to run the kit tests; `teme-dev` was
+not touched. A copy of the directory repository and the screenshot demo
+live in the session's scratch space only.
