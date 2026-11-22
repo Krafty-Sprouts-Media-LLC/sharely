@@ -2,6 +2,33 @@
 
 All notable changes to Sharely. Versions follow semantic versioning.
 
+## 1.1.0 (2026-11-22)
+
+Ready for Teme's directory, and for a site to upload as a zip.
+
+### Added
+
+- A zip a site can upload from Plugins › Add plugin, built with
+  `php tools/package.php` (or `composer package`). It holds one top-level
+  folder with only what a site runs, a `composer.json` that carries the
+  version Teme's upload needs, and is checked against the rules Teme applies
+  when it uploads and unpacks a package. The same source always makes the
+  same bytes, so its checksum can be trusted.
+- A release workflow: push a version tag and GitHub builds the zip, checks
+  that the tag, `teme-plugin.json` and this changelog agree, and publishes a
+  release with the zip, its checksum and these notes.
+- A test workflow that runs the unit tests and builds the zip on every push.
+
+### Changed
+
+- Needs Teme 1.3.1 or later (was 1.0): from 1.3.1 Teme installs plugins that
+  require `teme/contracts`, which is what the directory and the upload
+  install.
+- `teme/contracts` is taken from Packagist (`^1.3`), so the package installs
+  and its unit tests run anywhere, with no Teme checkout beside it.
+- The header tool no longer rewrites a file's `@since`, so each file keeps the
+  version it arrived in.
+
 ## 1.0.0 (2026-11-17)
 
 The first release.

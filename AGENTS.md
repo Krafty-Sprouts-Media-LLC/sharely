@@ -63,9 +63,17 @@ the code. Tests never reach the network: unit tests use the fakes in
   tab)"), visible focus, works by keyboard, respects reduced motion.
 - `declare(strict_types=1);` in every PHP file; a file header docblock (one
   sentence on what the file is for, `@package KraftySprouts\Sharely`,
-  `@since 1.0.0`) before it; a docblock on every class, method and constant
-  with `@since 1.0.0`. `php tools/add-file-headers.php 1.0.0 "KraftySprouts\Sharely" src database tests`
-  and `php tools/add-since.php 1.0.0 src database` fill in any missing.
+  `@since <version>`) before it; a docblock on every class, method and
+  constant with `@since <version>`.
+- **`@since` is the version a thing arrived in, and never changes.** The code
+  that was pushed as 1.0.0 is `@since 1.0.0`; what is added after a release
+  carries the version it will ship in (the one in `teme-plugin.json`, the top
+  of `CHANGELOG.md`), such as `1.1.0`. Changing an existing method keeps its
+  tag; adding a method or a file takes the current version. Run
+  `php tools/add-file-headers.php <current version> "KraftySprouts\Sharely" src database tests`
+  and `php tools/add-since.php <current version> src database` with the
+  version being built: they only fill in what is missing and never rewrite a
+  tag that is there.
 - CSS classes and JavaScript globals start with `sharely`.
 
 ## Layout

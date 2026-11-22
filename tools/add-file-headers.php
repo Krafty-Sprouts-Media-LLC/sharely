@@ -1,11 +1,12 @@
 <?php
 
 /**
- * Adds (or refreshes) a file header docblock (purpose, @package, @since) on
+ * Adds a file header docblock (purpose, @package, @since) on
  * every PHP file in the given folders, before declare(strict_types=1). The
- * purpose is the first sentence of the file's class docblock. Running it
- * again rewrites its own headers, so it is safe to repeat. It skips the
- * tools folder, whose files are written by hand.
+ * purpose is the first sentence of the file's class docblock. A file that
+ * already has a header is left alone, so @since keeps the version a file
+ * arrived in; give the version being built. It skips the tools folder, whose
+ * files are written by hand.
  *
  * Usage: php tools/add-file-headers.php <version> <package> <dir> [<dir>...]
  *
@@ -43,11 +44,16 @@ foreach ($dirs as $dir) {
             continue;
         }
 
-        // Drop a header this script wrote earlier, so it can be rewritten.
-        $body = preg_replace('/^<\?php\R\R\/\*\*(?:(?!\*\/).)*?@package '.preg_quote($package, '/').'\R \* @since [^\n]*\R \*\/\R\R/s', "<?php\n\n", $code, 1);
-        $purpose = purpose($body, $unix);
+        // A file that has a header keeps it, with the version it arrived in: @since says when
+        // something was added, so it is never rewritten. Only a file with no header gets one,
+        // stamped with the version given, which must be the version being built.
+        if (preg_match('/^<\?php\R\R\/\*\*(?:(?!\*\/).)*?@package '.preg_quote($package, '/').'\R \* @since [^\n]*\R \*\/\R\R/s', $code) === 1) {
+            continue;
+        }
+
+        $purpose = purpose($code, $unix);
         $header = "/**\n".wrap($purpose)." *\n * @package ".$package."\n * @since ".$version."\n */\n\n";
-        $new = preg_replace('/^<\?php\R\R/', "<?php\n\n".$header, $body, 1, $count);
+        $new = preg_replace('/^<\?php\R\R/', "<?php\n\n".$header, $code, 1, $count);
 
         if ($count === 1 && $new !== $code) {
             file_put_contents($path, $new);

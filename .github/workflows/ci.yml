@@ -1,0 +1,48 @@
+name: CI
+
+# Runs the unit tests and builds the upload zip on every push to main and every
+# pull request, so a broken package is caught before a release is tagged.
+# The kit tests need a Teme checkout and PostgreSQL, so they run locally
+# (see AGENTS.md); these are the tests that need neither.
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: zip, mbstring, dom, libxml
+                  coverage: none
+
+            - name: Install
+              run: composer install --no-interaction --no-progress --prefer-dist
+
+            - name: Unit tests
+              run: vendor/bin/pest
+
+            - name: Scripts parse
+              run: for f in resources/js/*.js; do node --check "$f"; done
+
+            - name: Build the upload zip and check it as Teme would
+              run: php tools/package.php
+
+            - name: Keep the zip
+              uses: actions/upload-artifact@v4
+              with:
+                  name: sharely-zip
+                  path: |
+                      dist/*.zip
+                      dist/*.sha256
+                  retention-days: 14

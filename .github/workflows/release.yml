@@ -1,0 +1,52 @@
+name: Release
+
+# Push a version tag (git tag v1.0.0 && git push origin v1.0.0) and this builds the
+# zip a site can upload, checks it as Teme would, and publishes a GitHub release
+# with the zip, its checksum and the changelog's notes for that version.
+#
+# Never move or delete a release's tag afterwards: Teme's directory records each
+# release's checksum once, and holds a release whose archive changes.
+
+on:
+    push:
+        tags: ['v*']
+
+permissions:
+    contents: write
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: zip, mbstring, dom, libxml
+                  coverage: none
+
+            - name: Install
+              run: composer install --no-interaction --no-progress --prefer-dist
+
+            - name: Unit tests
+              run: vendor/bin/pest
+
+            - name: Scripts parse
+              run: for f in resources/js/*.js; do node --check "$f"; done
+
+            - name: Build the zip
+              # Fails when the tag, teme-plugin.json and CHANGELOG.md disagree on the
+              # version, or when a site would refuse the zip.
+              run: php tools/package.php --tag="$GITHUB_REF_NAME" --notes=dist/release-notes.md
+
+            - name: Publish the release
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  flags=""
+                  case "$GITHUB_REF_NAME" in *-*) flags="--prerelease" ;; esac
+                  gh release create "$GITHUB_REF_NAME" dist/sharely-*.zip dist/sharely-*.zip.sha256 \
+                      --title "Sharely ${GITHUB_REF_NAME#v}" \
+                      --notes-file dist/release-notes.md \
+                      --verify-tag $flags
